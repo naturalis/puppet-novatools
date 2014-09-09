@@ -41,7 +41,7 @@ class novatools (
 
   nova_volume_create { 'testa':
     ensure   => present,
-    password => $::password,
+    password => $password,
   }
 
 }
