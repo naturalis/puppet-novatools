@@ -37,5 +37,7 @@
 #
 class novatools {
 
+  nova_volume_create { 'a':
+  }
 
 }
