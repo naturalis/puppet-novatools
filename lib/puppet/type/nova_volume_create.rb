@@ -6,6 +6,7 @@ Puppet::Type.newtype(:nova_volume_create) do
 
   newparam(:name) do
     desc 'Name of the volume'
+
     isnamevar
   end
 
@@ -27,6 +28,7 @@ Puppet::Type.newtype(:nova_volume_create) do
 
   newparam(:api_port) do
     desc 'Auth Portnummer of API (defautl 5000)'
+
     defaultto '5000'
   end
 
@@ -37,6 +39,7 @@ Puppet::Type.newtype(:nova_volume_create) do
 
   newparam(:volume_size) do
     desc 'Volume size in GB'
+
     defaultto '1'
   end
 
