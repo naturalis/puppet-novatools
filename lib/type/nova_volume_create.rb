@@ -1,11 +1,13 @@
 Puppet::Type.newtype(:nova_volume_create) do
 
-  @doc = "Manage creation/deletion of cinder volumes."
+  @doc = 'Manage creation/deletion of cinder volumes.'
 
   ensurable
 
-  newparam(:name, :namevar => true) do
-    desc "Name of the volume"
+  newparam(:name) do
+    desc 'Name of the volume'
+
+    isnamevar
   end
 
   # newparam(:tenant) do
@@ -21,7 +23,7 @@ Puppet::Type.newtype(:nova_volume_create) do
   # end
   #
   newparam(:password) do
-    desc "Openstack Password"
+    desc 'Openstack Password'
   end
   #
   # newparam(:controller_url) do
