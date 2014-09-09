@@ -14,9 +14,9 @@ Puppet::Type.newtype(:nova_volume_create) do
     desc 'Name of tentant'
   end
 
-  newparam(:username) do
-    desc 'Openstack Username'
-  end
+  # newparam(:username) do
+  #   desc 'Openstack Username'
+  # end
 
   newparam(:password) do
     desc 'Openstack Password'
