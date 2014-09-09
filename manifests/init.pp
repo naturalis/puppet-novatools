@@ -40,7 +40,7 @@ class novatools (
   ){
 
   nova_volume_create { 'testa':
-    ensure   => present,
+    ensure   => absent,
     password => $password,
   }
 
