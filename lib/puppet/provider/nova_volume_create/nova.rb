@@ -5,7 +5,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
   commands nova: 'nova'
 
   def exists?
-    nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
+    nova('--os-auth-url', "http://10.41.1.1:5000/v2.0",
          '--os-tenant-name', resource[:tenant],
          '--os-username', 'admin',
          '--os-password', resource[:password],
@@ -13,7 +13,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
   end
 
   def create
-    nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
+    nova('--os-auth-url', "http://10.41.1.1:5000/v2.0",
          '--os-tenant-name', resource[:tenant],
          '--os-username', 'admin',
          '--os-password', resource[:password],
@@ -22,7 +22,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
   end
 
   def destroy
-    nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
+    nova('--os-auth-url', "http://10.41.1.1:5000/v2.0",
          '--os-tenant-name', resource[:tenant],
          '--os-username', 'admin',
          '--os-password', resource[:password],
