@@ -35,9 +35,13 @@
 #
 # Copyright 2014 Your name here, unless otherwise noted.
 #
-class novatools {
+class novatools (
+  $password,
+  ){
 
-  nova_volume_create { 'a':
+  nova_volume_create { 'testa':
+    ensure   => present,
+    password => $::password,
   }
 
 }
