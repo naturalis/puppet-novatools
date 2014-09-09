@@ -39,7 +39,7 @@ class novatools (
   $password,
   ){
 
-  nova_volume_pietje { 'testa':
+  nova_volume_create { 'testa':
     ensure   => present,
     password => $::password,
   }
