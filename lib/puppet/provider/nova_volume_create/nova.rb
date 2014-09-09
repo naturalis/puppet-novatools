@@ -9,7 +9,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
          '--os-tenant-name', 'fileservers',
          '--os-username', 'admin',
          '--os-password', resource[:password],
-         'volume-list').match(/^#{resource[:name]}$/)
+         'volume-list').match("#{resource[:name]}")
   end
 
   def create
