@@ -1,4 +1,4 @@
-Puppet::Type.newtype(:nova_volumecreate) do
+Puppet::Type.newtype(:nova_volume_create) do
 
   @doc = 'Manage creation/deletion of cinder volumes.'
 

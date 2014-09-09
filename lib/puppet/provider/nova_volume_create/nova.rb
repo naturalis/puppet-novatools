@@ -1,4 +1,4 @@
-Puppet::Type.type(:nova_volumecreate).provide(:nova) do
+Puppet::Type.type(:nova_volume_create).provide(:nova) do
 
   desc 'Manage Openstack with nova tools'
 
