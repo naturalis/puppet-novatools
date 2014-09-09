@@ -21,7 +21,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
          '--display-name', resource[:name])
   end
 
-  def destory
+  def destroy
     nova('--os-auth-url', 'http://10.41.1.1:5000/v2.0',
          '--os-tenant-name', 'fileservers',
          '--os-username', 'admin',
