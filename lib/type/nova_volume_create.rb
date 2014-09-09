@@ -39,3 +39,4 @@ Puppet::Type.newtype(:nova_volume_create) do
   #
   #   defaultto "v2.0"
   # end
+end
