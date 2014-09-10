@@ -31,7 +31,9 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
                'volume-list')
     vid = vid.split("\n")
     vid.each do
-      |v| print v + "\n"
+      |v| if v.include? "testa"
+        p v
+      end
     end
   end
 
