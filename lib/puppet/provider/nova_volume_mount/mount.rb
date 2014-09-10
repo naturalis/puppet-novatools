@@ -16,20 +16,16 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     vi = get_volume_info
     blk = blockdevice_name(vi['id'])
     if is_mounted(blk)
-      p 'mounted'
       true
     else
-      p 'not mounted'
       false
     end
   end
 
   def create
-    p 'create to be implemented'
     # first check if fs is there
     vi = get_volume_info
     blk = blockdevice_name(vi['id'])
-    p resource[:filesystem]
     unless has_filesystem(blk, resource[:filesystem])
       mkfsext4(blk)
     end
@@ -37,12 +33,12 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     unless is_mounted(blk)
       mount(blk, resource[:mountpoint])
     end
-
-
   end
 
   def destroy
-    p 'destroy to be implemented'
+    vi = get_volume_info
+    blk = blockdevice_name(vi['id'])
+    umount(blk, resource[:mountpoint])
   end
 
   def get_volume_info
@@ -93,13 +89,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
   end
 
   def has_filesystem(blk, fs)
-    # list =  blkid(blk)
-    # p blkid
-    # return list.include? fs
-    p fs
     l =  lsblk('-f', blk)
-    p l
-    print l.include? fs
     return l.include? fs
   end
 
