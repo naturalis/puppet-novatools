@@ -28,7 +28,7 @@ Puppet::Type.newtype(:nova_volume_mount) do
 
   newparam(:filesystem) do
     desc 'Filesystem: choose from ext4,xfs'
-    newvalues(:ext4, :xfs)
+    newvalues('ext4', 'xfs')
     defaultto 'ext4'
   end
 
