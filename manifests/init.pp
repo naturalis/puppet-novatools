@@ -44,7 +44,8 @@ class novatools (
     password       => $password,
     username       => 'admin',
     tenant         => 'fileservers',
-    controller_ip  => '10.41.1.1',    
+    controller_ip  => '10.41.1.1',
+    volume_size    => '10'
   }
 
 }
