@@ -96,9 +96,10 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     # list =  blkid(blk)
     # p blkid
     # return list.include? fs
-    p blk
+    p fs
     l =  lsblk('-f', blk)
     p l
+    print l.include? fs
     return l.include? fs
   end
 
