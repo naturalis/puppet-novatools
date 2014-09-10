@@ -14,7 +14,7 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
   end
 
   def create
-    volume_id = `"/usr/bin/nova --os-auth-url http://10.41.1.1:5000/v2.0 --os-tenant-name fileservers --os-username admin --os-password admin volume-list | awk '{if ($6==\"testa\") print $2}'"`
+    volume_id = `"/usr/bin/nova --os-auth-url http://10.41.1.1:5000/v2.0 --os-tenant-name fileservers --os-username admin --os-password admin volume-list | /usr/bin/awk '{if (\$6==\"testa\") print \$2}'"`
     nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
          '--os-tenant-name', resource[:tenant],
          '--os-username', resource[:username],
