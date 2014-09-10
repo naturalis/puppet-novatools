@@ -9,6 +9,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
   commands umount: 'umount'
   commands mkfsext4: 'mkfs.ext4'
   commands blkid: 'blkid'
+  commands lsblk: 'lsblk'
   optional_commands mkfsxfs: 'mkfs.xfs'
 
   def exists?
@@ -92,9 +93,10 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
   end
 
   def has_filesystem(blk, fs)
-    list =  blkid(blk)
-    p blkid
-    return list.include? fs
+    # list =  blkid(blk)
+    # p blkid
+    # return list.include? fs
+    return lsblk('-f',blk).include? fs
   end
 
 
