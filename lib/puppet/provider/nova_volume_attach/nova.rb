@@ -5,11 +5,12 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
   commands nova: 'nova'
 
   def exists?
-    nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
-         '--os-tenant-name', resource[:tenant],
-         '--os-username', resource[:username],
-         '--os-password', resource[:password],
-         'volume-list').match("#{resource[:name]}")
+    # nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
+    #      '--os-tenant-name', resource[:tenant],
+    #      '--os-username', resource[:username],
+    #      '--os-password', resource[:password],
+    #      'volume-list').match("#{resource[:name]}")
+    false
   end
 
   def create
