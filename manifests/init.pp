@@ -48,13 +48,13 @@ class novatools (
     volume_size    => '10'
   }
 
-  # nova_volume_attach { 'testb':
-  #   ensure         => present,
-  #   password       => $password,
-  #   username       => 'admin',
-  #   tenant         => 'fileservers',
-  #   controller_ip  => '10.41.1.1',
-  #   instance       => $::fqdn,
-  # }
+  nova_volume_attach { 'testb':
+    ensure         => present,
+    password       => $password,
+    username       => 'admin',
+    tenant         => 'fileservers',
+    controller_ip  => '10.41.1.1',
+    instance       => $::fqdn,
+  }
 
 }
