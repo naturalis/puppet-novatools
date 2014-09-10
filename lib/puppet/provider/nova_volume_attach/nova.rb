@@ -36,6 +36,7 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
   # end
 
   def get_volume_info
+    volume_info = Hash.new
     vid = nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
                '--os-tenant-name', resource[:tenant],
                '--os-username', resource[:username],
@@ -43,11 +44,16 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
                'volume-list')
     vid = vid.split("\n")
     vid.each do |v|
-      if v.include? "testa"
+      if v.include? resource[:name]
         r = v.split("|")
-        r.each do |r|
-          print r.strip + "\n"
-        end
+        # r.each do |r|
+        #   print r.strip + "\n"
+        # end
+        volume_info["id"] = r[1]
+        volume_info["status"] = r[2]
+        volume_info["name"] = r[3]
+        volume_info["attached_to"] = r[6]
+        p volume_info
       end
     end
   end
