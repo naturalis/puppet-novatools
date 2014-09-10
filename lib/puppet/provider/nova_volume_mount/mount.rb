@@ -2,6 +2,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
 
   desc 'Manage Openstack with nova tools'
 
+  commands nova: 'nova'
   commands mount: 'mount'
   commands umount: 'umount'
   commands mkfsext4: 'mkfs.ext4'
@@ -76,7 +77,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     return File.readlink(idlink)
   end
 
-  def has_filesystem(blk,fs)
+  def has_filesystem(blk, fs)
     return blkid(blk).include? fs
   end
 
