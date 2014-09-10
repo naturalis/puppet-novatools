@@ -29,6 +29,7 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
                '--os-username', resource[:username],
                '--os-password', resource[:password],
                'volume-list')
+    vid = vid.split("\n")
     vid.each do
       |v| print v + "\n"
     end
