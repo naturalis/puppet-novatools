@@ -17,13 +17,6 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
     else
       raise "Volume %s is attached to different instance" % resource[:name]
     end
-
-    # nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
-    #      '--os-tenant-name', resource[:tenant],
-    #      '--os-username', resource[:username],
-    #      '--os-password', resource[:password],
-    #      'volume-list').match("#{resource[:name]}")
-
   end
 
   def create
@@ -35,13 +28,14 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
          'volume-attach', resource[:instance], vi['id'])
   end
 
-  # def destroy
-  #   nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
-  #        '--os-tenant-name', resource[:tenant],
-  #        '--os-username',  resource[:username],
-  #        '--os-password', resource[:password],
-  #        'volume-delete', resource[:name])
-  # end
+  def destroy
+    vi = get_volume_info
+    nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
+         '--os-tenant-name', resource[:tenant],
+         '--os-username', resource[:username],
+         '--os-password', resource[:password],
+         'volume-detach', resource[:instance], vi['id'])
+  end
 
   def get_volume_info
     volume_info = Hash.new
