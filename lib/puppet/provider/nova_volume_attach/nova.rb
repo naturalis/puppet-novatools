@@ -24,6 +24,18 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
     #      '--os-password', resource[:password],
     #      'volume-attach', resource[:instance], volume_id)
 
+    get_volume_info
+  end
+
+  # def destroy
+  #   nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
+  #        '--os-tenant-name', resource[:tenant],
+  #        '--os-username',  resource[:username],
+  #        '--os-password', resource[:password],
+  #        'volume-delete', resource[:name])
+  # end
+
+  def get_volume_info
     vid = nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
                '--os-tenant-name', resource[:tenant],
                '--os-username', resource[:username],
@@ -39,13 +51,5 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
       end
     end
   end
-
-  # def destroy
-  #   nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
-  #        '--os-tenant-name', resource[:tenant],
-  #        '--os-username',  resource[:username],
-  #        '--os-password', resource[:password],
-  #        'volume-delete', resource[:name])
-  # end
 
 end
