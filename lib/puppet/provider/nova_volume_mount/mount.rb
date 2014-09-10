@@ -26,12 +26,22 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     # first check if fs is there
     vi = get_volume_info
     blk = blockdevice_name(vi['id'])
+
     unless has_filesystem(blk, resource[:filesystem])
-      mkfsext4(blk)
+      if resource[:filesystem] == 'ext4'
+        mkfsext4(blk)
+      else
+        raise 'Cannot create filesystem %s' % resource[:filesystem]
+      end
     end
-    FileUtils::mkdir_p resource[:mountpoint]
+
     unless is_mounted(blk)
-      mount(blk, resource[:mountpoint])
+      if has_filesystem(blk, resource[:filesystem])
+        FileUtils::mkdir_p resource[:mountpoint]
+        mount(blk, resource[:mountpoint])
+      else
+        raise 'Cannot mount block has no %s filesystem' % resource[:filesystem]
+      end
     end
   end
 

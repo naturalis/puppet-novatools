@@ -70,4 +70,16 @@ class novatools (
     require        => Nova_volume_attach['testa'],
   }
 
+  nova_volume_mount { 'testb':
+    ensure         => present,
+    password       => $password,
+    username       => 'admin',
+    tenant         => 'fileservers',
+    controller_ip  => '10.41.1.1',
+    instance       => $::fqdn,
+    mountpoint     => '/piet',
+    filesystem     => 'ext4',
+    require        => Nova_volume_attach['testb'],
+  }
+
 }
