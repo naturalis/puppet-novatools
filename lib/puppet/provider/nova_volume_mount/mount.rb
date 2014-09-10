@@ -32,7 +32,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     unless has_filesystem(blk,resource[:filesystem])
       mkfsext4(blk)
     end
-    FileUtils.mkdir_p resource[:mountpoint]
+    FileUtils::mkdir_p resource[:mountpoint]
     unless is_mounted(blk)
       mount(blk, resource[:mountpoint])
     end
