@@ -93,6 +93,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
 
   def has_filesystem(blk, fs)
     list =  blkid(blk)
+    p blkid
     return list.include? fs
   end
 
