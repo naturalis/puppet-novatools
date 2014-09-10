@@ -55,7 +55,19 @@ class novatools (
     tenant         => 'fileservers',
     controller_ip  => '10.41.1.1',
     instance       => $::fqdn,
-    require        => Nova_volume_create['testb'],
+    require        => [Nova_volume_create['testb'],Nova_volume_create['testb']],
+  }
+
+  nova_volume_mount { 'testa':
+    ensure         => present,
+    password       => $password,
+    username       => 'admin',
+    tenant         => 'fileservers',
+    controller_ip  => '10.41.1.1',
+    instance       => $::fqdn,
+    mountpoint     => '/data',
+    filesystem     => 'ext4',
+    require        => Nova_volume_attach['testa'],
   }
 
 }
