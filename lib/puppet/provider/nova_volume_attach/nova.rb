@@ -9,14 +9,14 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
     id = get_instance_id
     p id
     if id == "nod found"
-      raise ArgumentError, "Instance %s is not found" % resource[:instance]
+      raise "Instance %s is not found" % resource[:instance]
     end
     if vi["attached_to"] == id
       true
     elsif vi["attached_to"] == ""
       false
     else
-      raise ArgumentError, "Volume %s is attached to different instance" % resource[:name]
+      raise "Volume %s is attached to different instance" % resource[:name]
     end
 
     # nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
@@ -75,7 +75,7 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
     vid.each do |v|
       if v.include? resource[:instance]
         r = v.split('|')
-        instance_id = r[1]
+        instance_id = r[1].strip
       end
     end
     return instance_id
