@@ -30,9 +30,12 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
                '--os-password', resource[:password],
                'volume-list')
     vid = vid.split("\n")
-    vid.each do
-      |v| if v.include? "testa"
-        p v
+    vid.each do |v|
+      if v.include? "testa"
+        r = v.split("\t")
+        r.each do |r|
+          print r + "\n"
+        end
       end
     end
   end
