@@ -15,6 +15,8 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
       true
     elsif vi["attached_to"] == ""
       false
+    elsif vi['status'] != 'available'
+      raise "Volume %s exists but status should be available"
     else
       raise "Volume %s is attached to different instance" % resource[:name]
     end

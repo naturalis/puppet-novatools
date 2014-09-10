@@ -39,22 +39,22 @@ class novatools (
   $password,
   ){
 
-  # nova_volume_create { 'testa':
-  #   ensure         => present,
-  #   password       => $password,
-  #   username       => 'admin',
-  #   tenant         => 'fileservers',
-  #   controller_ip  => '10.41.1.1',
-  #   volume_size    => '10'
-  # }
-
-  nova_volume_attach { 'testa':
+  nova_volume_create { 'testb':
     ensure         => present,
     password       => $password,
     username       => 'admin',
     tenant         => 'fileservers',
     controller_ip  => '10.41.1.1',
-    instance       => $::fqdn,
+    volume_size    => '10'
   }
+
+  # nova_volume_attach { 'testb':
+  #   ensure         => present,
+  #   password       => $password,
+  #   username       => 'admin',
+  #   tenant         => 'fileservers',
+  #   controller_ip  => '10.41.1.1',
+  #   instance       => $::fqdn,
+  # }
 
 }
