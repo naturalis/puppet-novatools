@@ -39,7 +39,7 @@ class novatools (
   $password,
   ){
 
-  nova_volume_create { 'testb':
+  nova_volume_create { ['testa','testb']:
     ensure         => present,
     password       => $password,
     username       => 'admin',
@@ -48,7 +48,7 @@ class novatools (
     volume_size    => '10',
   }
 
-  nova_volume_attach { 'testb':
+  nova_volume_attach { ['testa','testb'] :
     ensure         => present,
     password       => $password,
     username       => 'admin',
