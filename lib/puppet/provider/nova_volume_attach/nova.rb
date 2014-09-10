@@ -7,7 +7,6 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
   def exists?
     vi = get_volume_info
     id = get_instance_id
-    p id
     if id == "not found"
       raise "Instance %s is not found" % resource[:instance]
     end
