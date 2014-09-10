@@ -1,5 +1,7 @@
 Puppet::Type.type(:nova_volume_mount).provide(:mount) do
 
+  require 'fileutils'
+
   desc 'Manage Openstack with nova tools'
 
   commands nova: 'nova'
@@ -24,6 +26,18 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
 
   def create
     p 'create to be implemented'
+    # first check if fs is there
+    vi = get_volume_info
+    blk = blockdevice_name(vi['id'])
+    unless has_filesystem(blk,resource[:filesystem])
+      mkfsext4(blk)
+    end
+    FileUtils.mkdir_p resource[:mountpoint]
+    unless is_mounted(blk)
+      mount(blk, resource[:mountpoint])
+    end
+
+
   end
 
   def destroy
@@ -74,7 +88,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
 
   def blockdevice_name(volume_id)
     idlink = "/dev/disk/by-id/virtio-#{volume_id[0..19]}"
-    return File.readlink(idlink)
+    return File.realpath(idlink)
   end
 
   def has_filesystem(blk, fs)

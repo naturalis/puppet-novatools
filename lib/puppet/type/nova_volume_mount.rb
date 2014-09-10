@@ -23,7 +23,7 @@ Puppet::Type.newtype(:nova_volume_mount) do
 
   newparam(:mountpoint) do
     desc 'mountpoint'
-    defaultto '/mnt/data'
+    defaultto '/data'
   end
 
   newparam(:filesystem) do
