@@ -29,7 +29,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     # first check if fs is there
     vi = get_volume_info
     blk = blockdevice_name(vi['id'])
-    unless has_filesystem(blk,resource[:filesystem])
+    unless has_filesystem(blk, resource[:filesystem])
       mkfsext4(blk)
     end
     FileUtils::mkdir_p resource[:mountpoint]
@@ -92,7 +92,8 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
   end
 
   def has_filesystem(blk, fs)
-    return blkid(blk).include? fs
+    list =  blkid(blk)
+    return list.include? fs
   end
 
 
