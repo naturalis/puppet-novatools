@@ -32,9 +32,9 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
     vid = vid.split("\n")
     vid.each do |v|
       if v.include? "testa"
-        r = v.split("\t")
+        r = v.split("|")
         r.each do |r|
-          print r + "\n"
+          print r.strip + "\n"
         end
       end
     end
