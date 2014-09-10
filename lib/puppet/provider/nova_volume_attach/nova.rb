@@ -15,7 +15,7 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
 
   def create
     #volume_id = `"/usr/bin/nova --os-auth-url http://10.41.1.1:5000/v2.0 --os-tenant-name fileservers --os-username admin --os-password admin volume-list | /usr/bin/awk '{if (\$6==\"testa\") print \$2}'"`
-    volume_id = `"/usr/bin/nova --os-auth-url http://10.41.1.1:5000/v2.0 --os-tenant-name fileservers --os-username admin --os-password admin volume-list | grep testa"`
+    volume_id = `/usr/bin/nova --os-auth-url http://10.41.1.1:5000/v2.0 --os-tenant-name fileservers --os-username admin --os-password admin volume-list | grep testa`
     p volume_id
 
     # nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
@@ -23,6 +23,13 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
     #      '--os-username', resource[:username],
     #      '--os-password', resource[:password],
     #      'volume-attach', resource[:instance], volume_id)
+
+    vid = nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
+               '--os-tenant-name', resource[:tenant],
+               '--os-username', resource[:username],
+               '--os-password', resource[:password],
+               'volume-list')
+    p vid
   end
 
   # def destroy
