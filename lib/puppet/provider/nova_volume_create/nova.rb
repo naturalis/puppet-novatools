@@ -6,7 +6,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
 
   def exists?
     nova('--os-auth-url', "http://10.41.1.1:5000/v2.0",
-         '--os-tenant-name', resource[:tenant],
+         '--os-tenant-name', 'fileservers',
          '--os-username', 'admin',
          '--os-password', resource[:password],
          'volume-list').match("#{resource[:name]}")
@@ -14,16 +14,16 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
 
   def create
     nova('--os-auth-url', "http://10.41.1.1:5000/v2.0",
-         '--os-tenant-name', resource[:tenant],
+         '--os-tenant-name', 'fileservers',
          '--os-username', 'admin',
          '--os-password', resource[:password],
-         'volume-create', resource[:volume_size],
+         'volume-create', '1',
          '--display-name', resource[:name])
   end
 
   def destroy
     nova('--os-auth-url', "http://10.41.1.1:5000/v2.0",
-         '--os-tenant-name', resource[:tenant],
+         '--os-tenant-name', 'fileservers',
          '--os-username', 'admin',
          '--os-password', resource[:password],
          'volume-delete', resource[:name])

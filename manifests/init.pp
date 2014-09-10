@@ -41,9 +41,7 @@ class novatools (
 
   nova_volume_create { 'testa':
     ensure         => present,
-    tenant         => 'fileservers',
     password       => $password,
-    controller_ip  => '10.41.1.1',
   }
 
 }
