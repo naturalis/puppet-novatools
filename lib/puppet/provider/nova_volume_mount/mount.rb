@@ -8,8 +8,8 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
   commands mount: 'mount'
   commands umount: 'umount'
   commands mkfsext4: 'mkfs.ext4'
-  commands blkid: 'blkid'
   commands lsblk: 'lsblk'
+  commands udevadm: 'udevadm'
   optional_commands mkfsxfs: 'mkfs.xfs'
 
   def exists?
@@ -94,8 +94,21 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
   end
 
   def blockdevice_name(volume_id)
-    idlink = "/dev/disk/by-id/virtio-#{volume_id[0..19]}"
-    return File.realpath(idlink)
+    # idlink = "/dev/disk/by-id/virtio-#{volume_id[0..19]}"
+    # return File.realpath(idlink)
+    dev = "cannot find device"
+    list = list_blocks
+    if list.length == 0
+      raise 'Cannot find blockdevices. Is %s really attached' % resource[:name]
+    else
+      list.each do |l|
+        info = udevadm('info','--query=property',"--name=${l}")
+        if info.include? volume_id[0..19]
+          dev = "/dev/#{l}"
+        end
+      end
+    end
+    return dev
   end
 
   def has_filesystem(blk, fs)
@@ -103,5 +116,17 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     return l.include? fs
   end
 
+  def list_blocks
+    list = Array.new
+    ls = lsblk('-r')
+    ls = l.split('\n')
+    ls.each do |l|
+      unless l.include? vda
+        temp = l.split(' ')
+        list.push temp[0]
+      end
+    end
+    return list
+  end
 
 end
