@@ -121,7 +121,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     ls = lsblk('-r')
     ls = ls.split('\n')
     ls.each do |l|
-      unless l.include? vda
+      unless l.include? "vda"
         temp = l.split(' ')
         list.push temp[0]
       end
