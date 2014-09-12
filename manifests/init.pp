@@ -45,7 +45,6 @@ class novatools (
   $mount_point = '/data',
   ){
 
-
   nova_volume_create { $volume_name :
     ensure         => present,
     password       => $password,
