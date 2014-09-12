@@ -45,6 +45,10 @@ class novatools (
   $mount_point = '/data',
   ){
 
+  package { 'python-novaclient':
+    ensure => present,
+  }
+
   nova_volume_create { $volume_name :
     ensure         => present,
     password       => $password,
@@ -52,6 +56,7 @@ class novatools (
     tenant         => $openstack_tentant,
     controller_ip  => $controller_ip,
     volume_size    => $volume_size,
+    require        => Package['python-novaclient'],
   }
 
   nova_volume_attach { $volume_name :
