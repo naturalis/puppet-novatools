@@ -120,11 +120,9 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     list = Array.new
     ls = lsblk('-l', '-n', '-o', 'NAME')
     ls = ls.split("\n")
-    p ls
     ls.each do |l|
       unless l.include? "vda"
         list.push l
-        p l
       end
     end
     return list
