@@ -102,7 +102,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
       raise 'Cannot find blockdevices. Is %s really attached' % resource[:name]
     else
       list.each do |l|
-        info = udevadm('info','--query=property',"--name=${l}")
+        info = udevadm('info','--query=property',"--name=#{l}")
         if info.include? volume_id[0..19]
           dev = "/dev/#{l}"
         end
