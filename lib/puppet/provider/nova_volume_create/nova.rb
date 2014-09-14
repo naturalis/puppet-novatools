@@ -17,7 +17,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     #      '--os-username', resource[:username],
     #      '--os-password', resource[:password],
     #      'volume-list').match("#{resource[:name]}")
-    if find_volume($token)
+    if find_volume
       true
     else
       false
@@ -31,7 +31,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     #      '--os-password', resource[:password],
     #      'volume-create', resource[:volume_size],
     #      '--display-name', resource[:name])
-    create_volume($token)
+    create_volume
   end
 
   def destroy
@@ -42,8 +42,8 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
          'volume-delete', resource[:name])
   end
 
-  def find_volume(tk)
-    token = update_token(tk)
+  def find_volume
+    update_token
 
     volume_endpoint = String.new
     token['access']['serviceCatalog'].each do |endpoint|
@@ -67,11 +67,11 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     end
   end
 
-  def create_volume(tk)
-    token = update_token(tk)
+  def create_volume
+    update_token
 
     volume_endpoint = String.new
-    token['access']['serviceCatalog'].each do |endpoint|
+    $token['access']['serviceCatalog'].each do |endpoint|
       if endpoint['type'].include? 'volume'
         volume_endpoint = endpoint['endpoints'][0]['publicURL']
       end
@@ -83,7 +83,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     req = Net::HTTP.Post.new(uri.path)
     volume_data = { 'volume' => {'size' => '1', 'display_name' => resource[:name] } }
     req.body = volume_data.to_json
-    req['x-auth-token'] = token['access']['token']['id']
+    req['x-auth-token'] = $token['access']['token']['id']
     req['content-type'] = 'application/json'
     req['accept'] = 'application/json'
     res = http.request(req)
@@ -102,14 +102,14 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     return JSON.parse(res.body)
   end
 
-  def update_token(tk)
-    unless tk
-      expire = Time.parse(token['access']['token']['expires']) - 60
+  def update_token
+    unless $token
+      expire = Time.parse($token['access']['token']['expires']) - 60
       if Time.now > expire then
-        return openstack_auth
+        $token = openstack_auth
       end
     else
-      return opentstack_auth
+      $token = opentstack_auth
     end
   end
 
