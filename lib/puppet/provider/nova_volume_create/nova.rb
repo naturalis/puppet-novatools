@@ -42,8 +42,8 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
          'volume-delete', resource[:name])
   end
 
-  def find_volume
-    update_token
+  def find_volume(tk)
+    token = update_token(tk)
 
     volume_endpoint = String.new
     token['access']['serviceCatalog'].each do |endpoint|
@@ -67,8 +67,8 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     end
   end
 
-  def create_volume
-    update_token
+  def create_volume(tk)
+    token = update_token(tk)
 
     volume_endpoint = String.new
     token['access']['serviceCatalog'].each do |endpoint|
@@ -102,14 +102,14 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     return JSON.parse(res.body)
   end
 
-  def update_token
-    unless self.token
+  def update_token(tk)
+    unless tk
       expire = Time.parse(token['access']['token']['expires']) - 60
       if Time.now > expire then
-        token = openstack_auth
+        return openstack_auth
       end
     else
-      token = opentstack_auth
+      return opentstack_auth
     end
   end
 
