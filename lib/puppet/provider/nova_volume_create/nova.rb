@@ -17,7 +17,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     #      '--os-username', resource[:username],
     #      '--os-password', resource[:password],
     #      'volume-list').match("#{resource[:name]}")
-    if find_volume(token)
+    if find_volume($token)
       true
     else
       false
@@ -31,7 +31,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     #      '--os-password', resource[:password],
     #      'volume-create', resource[:volume_size],
     #      '--display-name', resource[:name])
-    create_volume(token)
+    create_volume($token)
   end
 
   def destroy
