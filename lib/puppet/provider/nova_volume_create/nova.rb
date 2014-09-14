@@ -9,7 +9,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
 
   commands nova: 'nova'
 
-  public token = false
+  public token
 
   def exists?
     # nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
