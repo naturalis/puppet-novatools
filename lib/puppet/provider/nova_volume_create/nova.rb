@@ -103,7 +103,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
   end
 
   def update_token
-    unless token
+    unless self.token
       expire = Time.parse(token['access']['token']['expires']) - 60
       if Time.now > expire then
         token = openstack_auth
