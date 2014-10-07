@@ -96,6 +96,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     req = Net::HTTP::Post.new(uri.path)
     auth_data = { 'auth' => { 'tenantName' => resource[:tenant], 'passwordCredentials' => { 'username' => resource[:username], 'password' => resource[:password] } } }
     req.body = auth_data.to_json
+    puts req.body
     req['content-type'] = 'application/json'
     req['accept'] = 'application/json'
     res = http.request(req)
