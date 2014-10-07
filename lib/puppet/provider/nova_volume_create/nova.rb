@@ -9,7 +9,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
 
   commands nova: 'nova'
 
-  @token = openstack_auth
+  @token = self.openstack_auth
 
   def exists?
     # nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
