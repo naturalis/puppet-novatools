@@ -92,7 +92,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     uri = URI("http://#{resource[:controller_ip]}:5000/v2.0")
     http = Net::HTTP.new(uri.host, uri.port)
     req = Net::HTTP::Post.new(uri.path)
-    auth_data = { 'auth' => { 'tenantName' => resouce[:tenant], 'passwordCredentials' => { 'username' => resouce[:username], 'password' => resource[:password] } } }
+    auth_data = { 'auth' => { 'tenantName' => resource[:tenant], 'passwordCredentials' => { 'username' => resource[:username], 'password' => resource[:password] } } }
     req.body = auth_data.to_json
     req['content-type'] = 'application/json'
     req['accept'] = 'application/json'
