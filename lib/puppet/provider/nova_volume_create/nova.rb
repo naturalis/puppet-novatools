@@ -55,13 +55,17 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     req['accept'] = 'application/json'
     res = http.request(req)
     res = JSON.parse(res.body)
-    res['volumes'].each do |v|
-      if v['display_name'].include? resource[:name]
-        puts 'volume found'
-        return true
-      else
-        puts 'volume not found'
-        return false
+    if res['volumes'].empty?
+      return false
+    else
+      res['volumes'].each do |v|
+        if v['display_name'].include? resource[:name]
+          puts 'volume found'
+          return true
+        else
+          puts 'volume not found'
+          return false
+        end
       end
     end
   end
