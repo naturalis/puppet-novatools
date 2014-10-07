@@ -109,7 +109,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
       # end
       @token = openstack_auth if Time.now > expire
     else
-      @token = opentstack_auth
+      @token = openstack_auth
     end
   end
 
