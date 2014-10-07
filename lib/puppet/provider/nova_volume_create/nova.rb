@@ -41,7 +41,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     update_token
 
     volume_endpoint = String.new
-    token['access']['serviceCatalog'].each do |endpoint|
+    @token['access']['serviceCatalog'].each do |endpoint|
       if endpoint['type'].include? 'volume'
         volume_endpoint = endpoint['endpoints'][0]['publicURL']
       end
@@ -51,7 +51,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
 
     http = Net::HTTP.new(uri.host, uri.port)
     req = Net::HTTP.Get.new(uri.path)
-    req['x-auth-token'] = token['access']['token']['id']
+    req['x-auth-token'] = @token['access']['token']['id']
     req['content-type'] = 'application/json'
     req['accept'] = 'application/json'
     res = http.request(req)
@@ -68,7 +68,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     update_token
 
     volume_endpoint = String.new
-    token['access']['serviceCatalog'].each do |endpoint|
+    @token['access']['serviceCatalog'].each do |endpoint|
       if endpoint['type'].include? 'volume'
         volume_endpoint = endpoint['endpoints'][0]['publicURL']
       end
@@ -80,7 +80,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     req = Net::HTTP.Post.new(uri.path)
     volume_data = { 'volume' => {'size' => '1', 'display_name' => resource[:name] } }
     req.body = volume_data.to_json
-    req['x-auth-token'] = token['access']['token']['id']
+    req['x-auth-token'] = @token['access']['token']['id']
     req['content-type'] = 'application/json'
     req['accept'] = 'application/json'
     res = http.request(req)
