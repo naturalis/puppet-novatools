@@ -21,12 +21,13 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
   end
 
   def create
-    nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
-         '--os-tenant-name', resource[:tenant],
-         '--os-username', resource[:username],
-         '--os-password', resource[:password],
-         'volume-create', resource[:volume_size],
-         '--display-name', resource[:name])
+    # nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
+    #      '--os-tenant-name', resource[:tenant],
+    #      '--os-username', resource[:username],
+    #      '--os-password', resource[:password],
+    #      'volume-create', resource[:volume_size],
+    #      '--display-name', resource[:name])
+    create_volume
   end
 
   def destroy
