@@ -9,7 +9,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
 
   commands nova: 'nova'
 
-  @token = false
+  @token = openstack_auth
 
   def exists?
     # nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
@@ -102,15 +102,18 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
   end
 
   def update_token
-    if !@token
-      expire = Time.parse(@token['access']['token']['expires']) - 60
-      # if Time.now > expire then
-      #   token = openstack_auth
-      # end
-      @token = openstack_auth if Time.now > expire
-    else
-      @token = opentstack_auth
-    end
+    expire = Time.parse(@token['access']['token']['expires']) - 60
+    @token = openstack_auth if Time.now > expire
+
+    # if @token
+    #   expire = Time.parse(@token['access']['token']['expires']) - 60
+    #   # if Time.now > expire then
+    #   #   token = openstack_auth
+    #   # end
+    #   @token = openstack_auth if Time.now > expire
+    # else
+    #   @token = opentstack_auth
+    # end
   end
 
 end
