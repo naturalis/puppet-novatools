@@ -91,7 +91,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
   end
 
   def openstack_auth
-    uri = URI("http://#{resource[:controller_ip]}:5000/v2.0")
+    uri = URI("http://#{resource[:controller_ip]}:5000/v2.0/tokens")
     http = Net::HTTP.new(uri.host, uri.port)
     req = Net::HTTP::Post.new(uri.path)
     auth_data = { 'auth' => { 'tenantName' => resource[:tenant], 'passwordCredentials' => { 'username' => resource[:username], 'password' => resource[:password] } } }
