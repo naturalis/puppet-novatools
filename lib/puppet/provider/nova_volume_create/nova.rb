@@ -38,11 +38,8 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
   end
 
   def find_volume
-    puts 'asking token'
     update_token
-    puts 'token updated'
     volume_endpoint = String.new
-    puts @token
     @token['access']['serviceCatalog'].each do |endpoint|
       if endpoint['type'].include? 'volume'
         volume_endpoint = endpoint['endpoints'][0]['publicURL']
@@ -58,6 +55,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     req['accept'] = 'application/json'
     res = http.request(req)
     res = JSON.parse(res.body)
+    puts res
     res['volumes'].each do |v|
       if v['display_name'].include? resource[:name]
         return true
