@@ -38,9 +38,11 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
   end
 
   def find_volume
+    puts 'asking token'
     update_token
-
+    puts 'token updated'
     volume_endpoint = String.new
+    puts @token
     @token['access']['serviceCatalog'].each do |endpoint|
       if endpoint['type'].include? 'volume'
         volume_endpoint = endpoint['endpoints'][0]['publicURL']
@@ -103,12 +105,14 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
 
   def update_token
     if @token
+      puts 'token exists'
       expire = Time.parse(@token['access']['token']['expires']) - 60
       # if Time.now > expire then
       #   token = openstack_auth
       # end
       @token = openstack_auth if Time.now > expire
     else
+      puts 'token created'
       @token = openstack_auth
     end
   end
