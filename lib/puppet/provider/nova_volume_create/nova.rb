@@ -9,12 +9,15 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
 
   commands nova: 'nova'
 
+  @token = false
+
   def exists?
-    nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
-         '--os-tenant-name', resource[:tenant],
-         '--os-username', resource[:username],
-         '--os-password', resource[:password],
-         'volume-list').match("#{resource[:name]}")
+    # nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
+    #      '--os-tenant-name', resource[:tenant],
+    #      '--os-username', resource[:username],
+    #      '--os-password', resource[:password],
+    #      'volume-list').match("#{resource[:name]}")
+    find_volume
   end
 
   def create
@@ -55,6 +58,8 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     res['volumes'].each do |v|
       if v['display_name'].include? resource[:name]
         return true
+      else
+        return false
       end
     end
   end
@@ -63,7 +68,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     update_token
 
     volume_endpoint = String.new
-    $token['access']['serviceCatalog'].each do |endpoint|
+    token['access']['serviceCatalog'].each do |endpoint|
       if endpoint['type'].include? 'volume'
         volume_endpoint = endpoint['endpoints'][0]['publicURL']
       end
@@ -75,11 +80,12 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     req = Net::HTTP.Post.new(uri.path)
     volume_data = { 'volume' => {'size' => '1', 'display_name' => resource[:name] } }
     req.body = volume_data.to_json
-    req['x-auth-token'] = $token['access']['token']['id']
+    req['x-auth-token'] = token['access']['token']['id']
     req['content-type'] = 'application/json'
     req['accept'] = 'application/json'
     res = http.request(req)
-    return JSON.parse(res.body)
+
+    JSON.parse(res.body)
   end
 
   def openstack_auth
@@ -91,17 +97,19 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
     req['content-type'] = 'application/json'
     req['accept'] = 'application/json'
     res = http.request(req)
-    return JSON.parse(res.body)
+
+    JSON.parse(res.body)
   end
 
   def update_token
-    if !$token
-      expire = Time.parse($token['access']['token']['expires']) - 60
-      if Time.now > expire then
-        $token = openstack_auth
-      end
+    if !@token
+      expire = Time.parse(@token['access']['token']['expires']) - 60
+      # if Time.now > expire then
+      #   token = openstack_auth
+      # end
+      @token = openstack_auth if Time.now > expire
     else
-      $token = opentstack_auth
+      @token = opentstack_auth
     end
   end
 
