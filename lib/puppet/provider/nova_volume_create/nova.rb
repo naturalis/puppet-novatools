@@ -31,11 +31,12 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
   end
 
   def destroy
-    nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
-         '--os-tenant-name', resource[:tenant],
-         '--os-username',  resource[:username],
-         '--os-password', resource[:password],
-         'volume-delete', resource[:name])
+    # nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
+    #      '--os-tenant-name', resource[:tenant],
+    #      '--os-username',  resource[:username],
+    #      '--os-password', resource[:password],
+    #      'volume-delete', resource[:name])
+    puts 'Deleting of volumes to be implemented. For now use Horizon Dashboard interface'
   end
 
   def find_volume
