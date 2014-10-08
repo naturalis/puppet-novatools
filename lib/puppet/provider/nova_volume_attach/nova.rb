@@ -126,6 +126,7 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
         return i['id']
       else
         fail 'could not find instance with name %s' % resource[:instance]
+      end
     end
   end
 
