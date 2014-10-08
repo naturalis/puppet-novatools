@@ -168,7 +168,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
   def volume_dev
     info = volume_info
     info['volumes'].each do |v|
-      return v['attachments'][0]['server_id'] if v['display_name'].include? resource[:name]
+      return v['attachments'][0]['device'] if v['display_name'].include? resource[:name]
     end
   end
 
