@@ -104,7 +104,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     dev = "cannot find device"
     list = list_blocks
     if list.length == 0
-      raise 'Cannot find blockdevices. Is %s really attached' % resource[:name]
+      fail 'cannot find blockdevices. Is %s really attached' % resource[:name]
     else
       list.each do |l|
         info = udevadm('info','--query=property',"--name=#{l}")
