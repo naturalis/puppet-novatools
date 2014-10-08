@@ -8,6 +8,12 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
 
   desc 'Manage Openstack with nova tools'
 
+  # Workflow
+  # Firsttime volume is attached devicemapping is correct
+  # write label/uuid to disk which is the volume id
+  # When checking, first check on uuid/label if unable to
+  # find that check device mappinng from api and set filesystem to it.
+
   commands nova: 'nova'
   commands mount: 'mount'
   commands umount: 'umount'
@@ -18,36 +24,38 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
 
   def exists?
     # vi = get_volume_info
-    blk = blockdevice_name(volume_id)
-    puts "in exists #{blk}"
-    if is_mounted(blk)
-      true
-    else
-      false
-    end
+    # blk = blockdevice_name(volume_id)
+    # puts "in exists #{blk}"
+    # if is_mounted(blk)
+    #   true
+    # else
+    #   false
+    # end
+    puts volume_dev
   end
 
   def create
     # first check if fs is there
     # vi = get_volume_info
-    blk = blockdevice_name(volume_id)
-
-    unless has_filesystem(blk, resource[:filesystem])
-      if resource[:filesystem] == 'ext4'
-        mkfsext4(blk)
-      else
-        fail 'Cannot create filesystem %s' % resource[:filesystem]
-      end
-    end
-
-    unless is_mounted(blk)
-      if has_filesystem(blk, resource[:filesystem])
-        FileUtils::mkdir_p resource[:mountpoint]
-        mount(blk, resource[:mountpoint])
-      else
-        fail 'Cannot mount block has no %s filesystem' % resource[:filesystem]
-      end
-    end
+    # blk = blockdevice_name(volume_id)
+    #
+    # unless has_filesystem(blk, resource[:filesystem])
+    #   if resource[:filesystem] == 'ext4'
+    #     mkfsext4(blk)
+    #   else
+    #     fail 'Cannot create filesystem %s' % resource[:filesystem]
+    #   end
+    # end
+    #
+    # unless is_mounted(blk)
+    #   if has_filesystem(blk, resource[:filesystem])
+    #     FileUtils::mkdir_p resource[:mountpoint]
+    #     mount(blk, resource[:mountpoint])
+    #   else
+    #     fail 'Cannot mount block has no %s filesystem' % resource[:filesystem]
+    #   end
+    # end
+    puts'Create to be implemented'
   end
 
   def destroy
@@ -154,6 +162,13 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     info = volume_info
     info['volumes'].each do |v|
       return v['id'] if v['display_name'].include? resource[:name]
+    end
+  end
+
+  def volume_dev
+    info = volume_info
+    info['volumes'].each do |v|
+      return v['attachments'][0]['server_id'] if v['display_name'].include? resource[:name]
     end
   end
 
