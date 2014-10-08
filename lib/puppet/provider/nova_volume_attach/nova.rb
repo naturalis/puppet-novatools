@@ -190,7 +190,7 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
       compute_endpoint = endpoint['endpoints'][0]['publicURL'] if endpoint['type'].include? 'compute'
     end
 
-    uri = URI("#{compute_endpoint}/#{t_id}/servers/#{i_id}")
+    uri = URI("#{compute_endpoint}/servers/#{i_id}")
     puts uri
     http = Net::HTTP.new(uri.host, uri.port)
     req = Net::HTTP::Post.new(uri.path)
