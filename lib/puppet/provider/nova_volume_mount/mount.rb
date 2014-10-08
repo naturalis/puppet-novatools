@@ -19,6 +19,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
   def exists?
     # vi = get_volume_info
     blk = blockdevice_name(volume_id)
+    puts blk
     if is_mounted(blk)
       true
     else
@@ -101,20 +102,18 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
   def blockdevice_name(volume_id)
     # idlink = "/dev/disk/by-id/virtio-#{volume_id[0..19]}"
     # return File.realpath(idlink)
-    dev = "cannot find device"
+    dev = String.new
     list = list_blocks
     puts list
     if list.length == 0
       fail 'cannot find blockdevices. Is %s really attached' % resource[:name]
     else
       list.each do |l|
-        info = udevadm('info','--query=property',"--name=#{l}")
-        if info.include? volume_id[0..19]
-          dev = "/dev/#{l}"
-        end
+        info = udevadm('info', '--query=property',"--name=#{l}")
+        dev = "/dev/#{l}" if info.include? volume_id[0..19]
       end
     end
-    return dev
+    dev
   end
 
   def has_filesystem(blk, fs)
