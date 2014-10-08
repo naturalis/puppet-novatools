@@ -79,7 +79,7 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
     info['volumes'].each do |v|
       v_info = v if v['display_name'].include? resource[:name]
     end
-    puts v_info['attachments']['server_id'].to_s
+    p v_info['attachments']['server_id'].to_s
     fail 'Volume %s not found ' % resource[:name] if v_info.include? 'none'
 
     if v_info['attachments'].include? id
