@@ -103,6 +103,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     # return File.realpath(idlink)
     dev = "cannot find device"
     list = list_blocks
+    puts list
     if list.length == 0
       fail 'cannot find blockdevices. Is %s really attached' % resource[:name]
     else
