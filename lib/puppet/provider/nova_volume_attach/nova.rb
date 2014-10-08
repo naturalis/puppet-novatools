@@ -202,7 +202,7 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
     req['content-type'] = 'application/json'
     req['accept'] = 'application/json'
     res = http.request(req)
-    puts res
+    puts res.body
     puts JSON.parse(res.body)
 
   end
