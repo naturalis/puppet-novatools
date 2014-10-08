@@ -1,6 +1,10 @@
 Puppet::Type.type(:nova_volume_mount).provide(:mount) do
 
   require 'fileutils'
+  require 'net/http'
+  require 'uri'
+  require 'json'
+  require 'time'
 
   desc 'Manage Openstack with nova tools'
 
@@ -13,8 +17,8 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
   optional_commands mkfsxfs: 'mkfs.xfs'
 
   def exists?
-    vi = get_volume_info
-    blk = blockdevice_name(vi['id'])
+    # vi = get_volume_info
+    blk = blockdevice_name(volume_id)
     if is_mounted(blk)
       true
     else
@@ -24,14 +28,14 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
 
   def create
     # first check if fs is there
-    vi = get_volume_info
-    blk = blockdevice_name(vi['id'])
+    # vi = get_volume_info
+    blk = blockdevice_name(volume_id)
 
     unless has_filesystem(blk, resource[:filesystem])
       if resource[:filesystem] == 'ext4'
         mkfsext4(blk)
       else
-        raise 'Cannot create filesystem %s' % resource[:filesystem]
+        fail 'Cannot create filesystem %s' % resource[:filesystem]
       end
     end
 
@@ -40,53 +44,54 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
         FileUtils::mkdir_p resource[:mountpoint]
         mount(blk, resource[:mountpoint])
       else
-        raise 'Cannot mount block has no %s filesystem' % resource[:filesystem]
+        fail 'Cannot mount block has no %s filesystem' % resource[:filesystem]
       end
     end
   end
 
   def destroy
-    vi = get_volume_info
-    blk = blockdevice_name(vi['id'])
-    umount(blk, resource[:mountpoint])
+    # vi = get_volume_info
+    # blk = blockdevice_name(vi['id'])
+    # umount(blk, resource[:mountpoint])
+    puts 'Destroy (unmount) of volume to be implemented'
   end
 
-  def get_volume_info
-    volume_info = Hash.new
-    vid = nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
-               '--os-tenant-name', resource[:tenant],
-               '--os-username', resource[:username],
-               '--os-password', resource[:password],
-               'volume-list')
-    vid = vid.split("\n")
-    vid.each do |v|
-      if v.include? resource[:name]
-        r = v.split('|')
-        volume_info['id'] = r[1].strip
-        volume_info['status'] = r[2].strip
-        volume_info['name'] = r[3].strip
-        volume_info['attached_to'] = r[6].strip
-      end
-    end
-    return volume_info
-  end
-
-  def get_instance_id
-    instance_id = "not found"
-    vid = nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
-               '--os-tenant-name', resource[:tenant],
-               '--os-username', resource[:username],
-               '--os-password', resource[:password],
-               'list')
-    vid = vid.split("\n")
-    vid.each do |v|
-      if v.include? resource[:instance]
-        r = v.split('|')
-        instance_id = r[1].strip
-      end
-    end
-    return instance_id
-  end
+  # def get_volume_info
+  #   volume_info = Hash.new
+  #   vid = nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
+  #              '--os-tenant-name', resource[:tenant],
+  #              '--os-username', resource[:username],
+  #              '--os-password', resource[:password],
+  #              'volume-list')
+  #   vid = vid.split("\n")
+  #   vid.each do |v|
+  #     if v.include? resource[:name]
+  #       r = v.split('|')
+  #       volume_info['id'] = r[1].strip
+  #       volume_info['status'] = r[2].strip
+  #       volume_info['name'] = r[3].strip
+  #       volume_info['attached_to'] = r[6].strip
+  #     end
+  #   end
+  #   return volume_info
+  # end
+  #
+  # def get_instance_id
+  #   instance_id = "not found"
+  #   vid = nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
+  #              '--os-tenant-name', resource[:tenant],
+  #              '--os-username', resource[:username],
+  #              '--os-password', resource[:password],
+  #              'list')
+  #   vid = vid.split("\n")
+  #   vid.each do |v|
+  #     if v.include? resource[:instance]
+  #       r = v.split('|')
+  #       instance_id = r[1].strip
+  #     end
+  #   end
+  #   return instance_id
+  # end
 
   def is_mounted(blk)
     mnt = mount
@@ -126,6 +131,58 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
       end
     end
     return list
+  end
+
+  def volume_info
+    update_token
+    volume_endpoint = String.new
+    @token['access']['serviceCatalog'].each do |endpoint|
+      volume_endpoint = endpoint['endpoints'][0]['publicURL'] if endpoint['type'].include? 'volume'
+    end
+
+    uri = URI("#{volume_endpoint}/volumes")
+    http = Net::HTTP.new(uri.host, uri.port)
+    req = Net::HTTP::Get.new(uri.path)
+    req['x-auth-token'] = @token['access']['token']['id']
+    req['content-type'] = 'application/json'
+    req['accept'] = 'application/json'
+    res = http.request(req)
+    JSON.parse(res.body)
+  end
+
+  def volume_id
+    info = volume_info
+    info['volumes'].each do |v|
+      return v['id'] if v['display_name'].include? resource[:name]
+    end
+  end
+
+  def openstack_auth
+    uri = URI("http://#{resource[:controller_ip]}:5000/v2.0/tokens")
+    http = Net::HTTP.new(uri.host, uri.port)
+    req = Net::HTTP::Post.new(uri.path)
+    auth_data = { 'auth' => { 'tenantName' => resource[:tenant], 'passwordCredentials' => { 'username' => resource[:username], 'password' => resource[:password] } } }
+    req.body = auth_data.to_json
+    req['content-type'] = 'application/json'
+    req['accept'] = 'application/json'
+    res = http.request(req)
+
+    JSON.parse(res.body)
+  end
+
+  def update_token
+    if @token
+      puts 'token exists'
+      expire = Time.parse(@token['access']['token']['expires']) - 60
+      # if Time.now > expire then
+      #   token = openstack_auth
+      # end
+      puts 'token expired, requesting new' if Time.now > expire
+      @token = openstack_auth if Time.now > expire
+    else
+      puts 'token created'
+      @token = openstack_auth
+    end
   end
 
 end

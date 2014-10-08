@@ -4,85 +4,24 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
 
   commands nova: 'nova'
 
+  require 'net/http'
+  require 'uri'
+  require 'json'
+  require 'time'
+
   @token = false
 
   def exists?
-    # JOBS
-    # Check if volume exists
-    # Check if voume is attached to something
-
-    # vi = get_volume_info
-    # id = get_instance_id
-    # if id == "not found"
-    #   raise "Instance %s is not found" % resource[:instance]
-    # end
-    # if vi["attached_to"] == id
-    #   true
-    # elsif vi["attached_to"] == ""
-    #   false
-    # else
-    #   raise "Volume %s is attached to different instance" % resource[:name]
-    # end
     find_volume
     attach_info
   end
 
   def create
-    # vi = get_volume_info
-    # nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
-    #      '--os-tenant-name', resource[:tenant],
-    #      '--os-username', resource[:username],
-    #      '--os-password', resource[:password],
-    #      'volume-attach', resource[:instance], vi['id'])
-    puts 'create to be implemented'
     attach_volume
   end
 
   def destroy
-    # vi = get_volume_info
-    # nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
-    #      '--os-tenant-name', resource[:tenant],
-    #      '--os-username', resource[:username],
-    #      '--os-password', resource[:password],
-    #      'volume-detach', resource[:instance], vi['id'])
     puts 'destroy to be implemented'
-  end
-
-  def get_volume_info
-    volume_info = Hash.new
-    vid = nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
-               '--os-tenant-name', resource[:tenant],
-               '--os-username', resource[:username],
-               '--os-password', resource[:password],
-               'volume-list')
-    vid = vid.split("\n")
-    vid.each do |v|
-      if v.include? resource[:name]
-        r = v.split('|')
-        volume_info['id'] = r[1].strip
-        volume_info['status'] = r[2].strip
-        volume_info['name'] = r[3].strip
-        volume_info['attached_to'] = r[6].strip
-      end
-    end
-    return volume_info
-  end
-
-  def get_instance_id
-    instance_id = "not found"
-    vid = nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
-               '--os-tenant-name', resource[:tenant],
-               '--os-username', resource[:username],
-               '--os-password', resource[:password],
-               'list')
-    vid = vid.split("\n")
-    vid.each do |v|
-      if v.include? resource[:instance]
-        r = v.split('|')
-        instance_id = r[1].strip
-      end
-    end
-    return instance_id
   end
 
   def volume_info
@@ -191,45 +130,15 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
     end
 
     uri = URI("#{compute_endpoint}/servers/#{i_id}/os-volume_attachments")
-    puts uri
     http = Net::HTTP.new(uri.host, uri.port)
     req = Net::HTTP::Post.new(uri.path)
-    puts http
-    puts req
     volume_data = { 'volumeAttachment' => {'volumeId' => v_id, 'attachment' => 'auto' } }
     req.body = volume_data.to_json
     req['x-auth-token'] = @token['access']['token']['id']
     req['content-type'] = 'application/json'
     req['accept'] = 'application/json'
     res = http.request(req)
-    puts res.body
-    puts JSON.parse(res.body)
-
   end
-
-  # def create_volume
-  #   update_token
-  #
-  #   volume_endpoint = String.new
-  #   @token['access']['serviceCatalog'].each do |endpoint|
-  #     if endpoint['type'].include? 'volume'
-  #       volume_endpoint = endpoint['endpoints'][0]['publicURL']
-  #     end
-  #   end
-  #
-  #   uri = URI("#{volume_endpoint}/volumes")
-  #
-  #   http = Net::HTTP.new(uri.host, uri.port)
-  #   req = Net::HTTP::Post.new(uri.path)
-  #   volume_data = { 'volume' => {'size' => '1', 'display_name' => resource[:name] } }
-  #   req.body = volume_data.to_json
-  #   req['x-auth-token'] = @token['access']['token']['id']
-  #   req['content-type'] = 'application/json'
-  #   req['accept'] = 'application/json'
-  #   res = http.request(req)
-  #
-  #   JSON.parse(res.body)
-  # end
 
   def tenant_id
     @token['access']['token']['tenant']['id']
@@ -262,6 +171,5 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
       @token = openstack_auth
     end
   end
-
 
 end
