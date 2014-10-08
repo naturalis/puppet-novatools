@@ -86,7 +86,7 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
 
     http = Net::HTTP.new(uri.host, uri.port)
     req = Net::HTTP::Post.new(uri.path)
-    volume_data = { 'volume' => {'size' => '1', 'display_name' => resource[:name] } }
+    volume_data = { 'volume' => {'size' => resource[:volume_size], 'display_name' => resource[:name] } }
     req.body = volume_data.to_json
     req['x-auth-token'] = @token['access']['token']['id']
     req['content-type'] = 'application/json'
