@@ -59,15 +59,15 @@ class novatools (
     require        => Package['python-novaclient'],
   }
 
-  # nova_volume_attach { $volume_name :
-  #   ensure         => present,
-  #   password       => $password,
-  #   username       => $openstack_username,
-  #   tenant         => $openstack_tentant,
-  #   controller_ip  => $controller_ip,
-  #   instance       => $::fqdn,
-  #   require        => Nova_volume_create[$volume_name],
-  # }
+  nova_volume_attach { $volume_name :
+    ensure         => present,
+    password       => $password,
+    username       => $openstack_username,
+    tenant         => $openstack_tentant,
+    controller_ip  => $controller_ip,
+    instance       => $::fqdn,
+    require        => Nova_volume_create[$volume_name],
+  }
   #
   # nova_volume_mount { $volume_name :
   #   ensure         => present,
