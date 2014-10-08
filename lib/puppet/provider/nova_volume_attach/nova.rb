@@ -77,7 +77,7 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
     else
       info['volumes'].each do |v|
         if v['display_name'].include? resource[:name]
-          puts v['attachents']
+          puts v['attachments']
           if v['attachments'].include? id
             return true
           else
