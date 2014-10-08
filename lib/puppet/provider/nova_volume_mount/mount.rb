@@ -19,7 +19,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
   def exists?
     # vi = get_volume_info
     blk = blockdevice_name(volume_id)
-    puts blk
+    puts "in exists #{blk}"
     if is_mounted(blk)
       true
     else
