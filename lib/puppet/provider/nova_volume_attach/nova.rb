@@ -88,7 +88,7 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
       if v_info['status'].include? 'available'
         return false
       else
-        fail 'volume is not available. It could be in error or attached to different instance. Status of volume is %s' % v['status']
+        fail 'volume is not available. It could be in error or attached to different instance. Status of volume is %s' % v_info['status']
       end
     end
   end
