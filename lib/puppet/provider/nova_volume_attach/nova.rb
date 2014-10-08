@@ -120,6 +120,7 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
 
   def instance_id
     info = instances_info
+    puts info
     fail 'could not retrieve instances list' if info['servers'].empty?
     info['servers'].each do |i|
       if i['name'].include? resource[:instance]
