@@ -89,9 +89,6 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
     volume_endpoint = String.new
     @token['access']['serviceCatalog'].each do |endpoint|
       volume_endpoint = endpoint['endpoints'][0]['publicURL'] if endpoint['type'].include? 'volume'
-      # if endpoint['type'].include? 'volume'
-      #   volume_endpoint = endpoint['endpoints'][0]['publicURL']
-      # end
     end
 
     uri = URI("#{volume_endpoint}/volumes")
@@ -104,8 +101,57 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
     JSON.parse(res.body)
   end
 
+  def instances_info
+    update_token
+    compute_endpoint = String.new
+    @token['access']['serviceCatalog'].each do |endpoint|
+      compute_endpoint = endpoint['endpoints'][0]['publicURL'] if endpoint['type'].include? 'compute'
+    end
+
+    uri = URI("#{compute_endpoint}/servers")
+    http = Net::HTTP.new(uri.host, uri.port)
+    req = Net::HTTP::Get.new(uri.path)
+    req['x-auth-token'] = @token['access']['token']['id']
+    req['content-type'] = 'application/json'
+    req['accept'] = 'application/json'
+    res = http.request(req)
+    JSON.parse(res.body)
+  end
+
+  def instance_id
+    info = instances_info
+    fail 'could not retrieve instances list' if info['servers'].empty?
+    info['servers'].each do |i|
+      if i['name'].include resource[:instance]
+        return i['id']
+      else
+        fail 'could not find instance with name %s' % resource[:instance]
+    end
+  end
+
   def attach_info
-    puts volume_info
+    id = instance_id
+    info = volume_info
+    if info['volumes'].empty?
+      # fail 'Volume with displayname %s cannot be found' % resource[:name]
+      fail 'No volumes found'
+    else
+      info['volumes'].each do |v|
+        if v['display_name'].include? resource[:name]
+           if v['attachments'].include? id
+             return true
+           else
+             if v['status'].include? 'available'
+               return false
+             else
+               fail 'volume is not available. It could be in error or attached to different instance. Status of volume is %s' % v['status']
+             end
+           end
+        else
+          fail 'No volume found with display_name %s' % resource[:name]
+        end
+      end
+    end
   end
 
   def find_volume
