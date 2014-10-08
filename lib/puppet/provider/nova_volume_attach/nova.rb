@@ -191,9 +191,11 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
     end
 
     uri = URI("#{compute_endpoint}/#{t_id}/servers/#{i_id}")
-
+    puts uri
     http = Net::HTTP.new(uri.host, uri.port)
     req = Net::HTTP::Post.new(uri.path)
+    puts http
+    puts req
     volume_data = { 'volumeAttachment' => {'volumeId' => v_id, 'attachment' => 'auto' } }
     req.body = volume_data.to_json
     req['x-auth-token'] = @token['access']['token']['id']
