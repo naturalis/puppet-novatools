@@ -82,7 +82,7 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
     p v_info['attachments'][0]['server_id']
     fail 'Volume %s not found ' % resource[:name] if v_info.include? 'none'
 
-    if v_info['attachments'].include? id
+    if v_info['attachments'][0]['server_id'].include? id
       return true
     else
       if v_info['status'].include? 'available'
