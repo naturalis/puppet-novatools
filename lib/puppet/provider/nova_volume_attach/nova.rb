@@ -121,10 +121,8 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
   def instance_id
     info = instances_info
     id = 'none'
-    puts info
     fail 'could not retrieve instances list' if info['servers'].empty?
     info['servers'].each do |i|
-      puts i['name']
       id = i['id'] if i['name'].include? resource[:instance]
     end
     fail 'could not find instance with name %s' % resource[:instance] if id.include? 'none'
@@ -135,7 +133,6 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
     id = instance_id
     info = volume_info
     if info['volumes'].empty?
-      # fail 'Volume with displayname %s cannot be found' % resource[:name]
       fail 'No volumes found'
     else
       info['volumes'].each do |v|
@@ -157,23 +154,24 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
   end
 
   def find_volume
-    update_token
-    volume_endpoint = String.new
-    @token['access']['serviceCatalog'].each do |endpoint|
-      if endpoint['type'].include? 'volume'
-        volume_endpoint = endpoint['endpoints'][0]['publicURL']
-      end
-    end
-
-    uri = URI("#{volume_endpoint}/volumes")
-
-    http = Net::HTTP.new(uri.host, uri.port)
-    req = Net::HTTP::Get.new(uri.path)
-    req['x-auth-token'] = @token['access']['token']['id']
-    req['content-type'] = 'application/json'
-    req['accept'] = 'application/json'
-    res = http.request(req)
-    res = JSON.parse(res.body)
+    # update_token
+    # volume_endpoint = String.new
+    # @token['access']['serviceCatalog'].each do |endpoint|
+    #   if endpoint['type'].include? 'volume'
+    #     volume_endpoint = endpoint['endpoints'][0]['publicURL']
+    #   end
+    # end
+    #
+    # uri = URI("#{volume_endpoint}/volumes")
+    #
+    # http = Net::HTTP.new(uri.host, uri.port)
+    # req = Net::HTTP::Get.new(uri.path)
+    # req['x-auth-token'] = @token['access']['token']['id']
+    # req['content-type'] = 'application/json'
+    # req['accept'] = 'application/json'
+    # res = http.request(req)
+    # res = JSON.parse(res.body)
+    res = volume_info
     if res['volumes'].empty?
       return false
     else
