@@ -77,15 +77,16 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
     else
       info['volumes'].each do |v|
         if v['display_name'].include? resource[:name]
-           if v['attachments'].include? id
-             return true
-           else
-             if v['status'].include? 'available'
-               return false
-             else
-               fail 'volume is not available. It could be in error or attached to different instance. Status of volume is %s' % v['status']
-             end
-           end
+          puts v['attachents']
+          if v['attachments'].include? id
+            return true
+          else
+            if v['status'].include? 'available'
+              return false
+            else
+              fail 'volume is not available. It could be in error or attached to different instance. Status of volume is %s' % v['status']
+            end
+          end
         else
           fail 'No volume found with display_name %s' % resource[:name]
         end
