@@ -32,8 +32,15 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     # else
     #   false
     # end
-    find_uuid
-    is_mounted
+    if find_uuid
+      case is_mounted
+      when 'mounted'
+        return true
+      when 'not mounted','mounted on different location'
+        return false
+    else
+      return false
+    end
   end
 
   def create
@@ -57,6 +64,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     #     fail 'Cannot mount block has no %s filesystem' % resource[:filesystem]
     #   end
     # end
+    puts is_mounted
     puts'Create to be implemented'
   end
 
@@ -74,8 +82,16 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     list = list.split("\n")
     list.each do |l|
       if l.include? volume_id
-        a = l.split(' ')
-        puts a.length
+        l = l.split(' ')
+        if l.length > 1
+          if l[1] == resource[:mountpoint]
+            return 'mounted'
+          else
+            return 'mounted on different location'
+          end
+        else
+          return 'not mounted'
+        end
       end
     end
   end
