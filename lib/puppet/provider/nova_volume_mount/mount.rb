@@ -33,6 +33,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     #   false
     # end
     find_uuid
+    is_mounted
   end
 
   def create
@@ -66,63 +67,15 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     puts 'Destroy (unmount) of volume to be implemented'
   end
 
-  # def get_volume_info
-  #   volume_info = Hash.new
-  #   vid = nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
-  #              '--os-tenant-name', resource[:tenant],
-  #              '--os-username', resource[:username],
-  #              '--os-password', resource[:password],
-  #              'volume-list')
-  #   vid = vid.split("\n")
-  #   vid.each do |v|
-  #     if v.include? resource[:name]
-  #       r = v.split('|')
-  #       volume_info['id'] = r[1].strip
-  #       volume_info['status'] = r[2].strip
-  #       volume_info['name'] = r[3].strip
-  #       volume_info['attached_to'] = r[6].strip
-  #     end
-  #   end
-  #   return volume_info
-  # end
-  #
-  # def get_instance_id
-  #   instance_id = "not found"
-  #   vid = nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
-  #              '--os-tenant-name', resource[:tenant],
-  #              '--os-username', resource[:username],
-  #              '--os-password', resource[:password],
-  #              'list')
-  #   vid = vid.split("\n")
-  #   vid.each do |v|
-  #     if v.include? resource[:instance]
-  #       r = v.split('|')
-  #       instance_id = r[1].strip
-  #     end
-  #   end
-  #   return instance_id
-  # end
 
-  def is_mounted(blk)
-    mnt = mount
-    return mnt.include? blk
-  end
 
-  def blockdevice_name(volume_id)
-    # idlink = "/dev/disk/by-id/virtio-#{volume_id[0..19]}"
-    # return File.realpath(idlink)
-    dev = String.new
-    list = list_blocks
-    puts list
-    if list.length == 0
-      fail 'cannot find blockdevices. Is %s really attached' % resource[:name]
-    else
-      list.each do |l|
-        info = udevadm('info', '--query=property',"--name=#{l}")
-        dev = "/dev/#{l}" if info.include? volume_id[0..19]
-      end
+  def is_mounted
+    list = lsblk('-l', '-n', '-o', 'UUID,MOUNTPOINT')
+    list.split("\n")
+    list.each do |l|
+      a = l.split(' ')
+      puts a.length
     end
-    dev
   end
 
   def has_filesystem(blk, fs)
@@ -216,5 +169,59 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
       @token = openstack_auth
     end
   end
+
+  # def get_volume_info
+  #   volume_info = Hash.new
+  #   vid = nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
+  #              '--os-tenant-name', resource[:tenant],
+  #              '--os-username', resource[:username],
+  #              '--os-password', resource[:password],
+  #              'volume-list')
+  #   vid = vid.split("\n")
+  #   vid.each do |v|
+  #     if v.include? resource[:name]
+  #       r = v.split('|')
+  #       volume_info['id'] = r[1].strip
+  #       volume_info['status'] = r[2].strip
+  #       volume_info['name'] = r[3].strip
+  #       volume_info['attached_to'] = r[6].strip
+  #     end
+  #   end
+  #   return volume_info
+  # end
+  #
+  # def get_instance_id
+  #   instance_id = "not found"
+  #   vid = nova('--os-auth-url', "http://#{resource[:controller_ip]}:5000/v2.0",
+  #              '--os-tenant-name', resource[:tenant],
+  #              '--os-username', resource[:username],
+  #              '--os-password', resource[:password],
+  #              'list')
+  #   vid = vid.split("\n")
+  #   vid.each do |v|
+  #     if v.include? resource[:instance]
+  #       r = v.split('|')
+  #       instance_id = r[1].strip
+  #     end
+  #   end
+  #   return instance_id
+  # end
+
+  # def blockdevice_name(volume_id)
+  #   # idlink = "/dev/disk/by-id/virtio-#{volume_id[0..19]}"
+  #   # return File.realpath(idlink)
+  #   dev = String.new
+  #   list = list_blocks
+  #   puts list
+  #   if list.length == 0
+  #     fail 'cannot find blockdevices. Is %s really attached' % resource[:name]
+  #   else
+  #     list.each do |l|
+  #       info = udevadm('info', '--query=property',"--name=#{l}")
+  #       dev = "/dev/#{l}" if info.include? volume_id[0..19]
+  #     end
+  #   end
+  #   dev
+  # end
 
 end
