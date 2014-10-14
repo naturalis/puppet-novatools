@@ -71,8 +71,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
 
   def is_mounted
     list = lsblk('-l', '-n', '-o', 'UUID,MOUNTPOINT')
-    puts list
-    list.split("\n")
+    list = list.split("\n")
     list.each do |l|
       a = l.split(' ')
       puts a.length
