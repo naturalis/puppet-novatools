@@ -32,6 +32,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     # else
     #   false
     # end
+    find_uuid
     puts volume_dev
   end
 
