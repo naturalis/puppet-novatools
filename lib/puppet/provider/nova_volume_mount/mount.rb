@@ -32,7 +32,6 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     # else
     #   false
     # end
-    puts mount_volume
     if find_uuid
       case is_mounted
       when 'mounted'
@@ -47,11 +46,14 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
 
   def create
     if find_uuid
-      puts is_mounted
-
+      case is_mounted
+      when 'not mounted'
+        mount_volume
+      end
     else
       puts 'creating fs'
       mkfsext4(volume_dev,'-U',volume_id)
+      mount_volume
     end
     # first check if fs is there
     # vi = get_volume_info
@@ -85,7 +87,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
 
   def mount_volume
     devpoint = "/dev/disk/by-uuid/#{volume_id}"
-    puts devpoint
+    mount(devpoint,resouce[:mountpoint])
   end
 
   def is_mounted
