@@ -38,6 +38,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
         return true
       when 'not mounted','mounted on different location'
         return false
+      end
     else
       return false
     end
