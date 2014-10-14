@@ -96,7 +96,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     if resource[:mount_options] == 'none'
       mount(devpoint,resource[:mountpoint])
     else
-      mount('-o',"\"#{resource[:mount_options]}\"",devpoint,resource[:mountpoint])
+      mount("-o \"#{resource[:mount_options]}\"",devpoint,resource[:mountpoint])
     end
   end
 
