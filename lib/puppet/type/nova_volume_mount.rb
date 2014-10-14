@@ -50,7 +50,7 @@ Puppet::Type.newtype(:nova_volume_mount) do
   end
 
   newparam(:mount_options) do
-    desc 'mount options'
+    desc 'Auth API version (default to v2.0)'
     defaultto 'none'
   end
 
