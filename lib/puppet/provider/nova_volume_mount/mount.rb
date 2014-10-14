@@ -146,8 +146,9 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
   def find_uuid
     uuid = lsblk('-l','-n','-o','UUID')
     uuid = uuid.split("\n")
+    found = Array.new
     uuid.each do |u|
-      puts u
+      found.push(uuid) if uuid.include? volume_id
     end
   end
 
