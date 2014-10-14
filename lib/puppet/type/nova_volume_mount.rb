@@ -49,4 +49,9 @@ Puppet::Type.newtype(:nova_volume_mount) do
     defaultto 'v2.0'
   end
 
+  newparam(:mount_options) do
+    desc 'mount options'
+    defaultto 'none'
+  end
+
 end

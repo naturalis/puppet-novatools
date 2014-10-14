@@ -78,6 +78,7 @@ class novatools (
     instance       => $::fqdn,
     mountpoint     => $mount_point,
     filesystem     => 'ext4',
+    mount_options  => 'user_xattr,acl',
     require        => Nova_volume_attach[$volume_name],
   }
 }
