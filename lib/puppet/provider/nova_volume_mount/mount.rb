@@ -92,11 +92,12 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
 
   def mount_volume
     devpoint = "/dev/disk/by-uuid/#{volume_id}"
-    if resource[:mount_options] == 'none'
-      mount(devpoint,resource[:mountpoint])
-    else
-      mount('-o',"'#{mount_options}'",devpoint,resource[:mountpoint])
-    end
+    mount(devpoint,resource[:mountpoint])
+    # if resource[:mount_options] == 'none'
+    #   mount(devpoint,resource[:mountpoint])
+    # else
+    #   mount('-o',"'#{mount_options}'",devpoint,resource[:mountpoint])
+    # end
   end
 
   def is_mounted
