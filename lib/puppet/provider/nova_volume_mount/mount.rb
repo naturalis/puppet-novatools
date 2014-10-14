@@ -20,6 +20,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
   commands mkfsext4: 'mkfs.ext4'
   commands lsblk: 'lsblk'
   commands udevadm: 'udevadm'
+  commands blkid: 'blkid'
   optional_commands mkfsxfs: 'mkfs.xfs'
 
   def exists?
@@ -139,6 +140,14 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
       end
     end
     return list
+  end
+
+  def find_uuid
+    uuid = lsblk('-l','-n','-o','-UUID')
+    uuid = uuid.split("\n")
+    uuid.each do |u|
+
+    end
   end
 
   def volume_info
