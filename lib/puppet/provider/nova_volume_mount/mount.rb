@@ -49,6 +49,8 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
       case is_mounted
       when 'not mounted'
         mount_volume
+      when 'mounted on different location'
+        fail "volume is already mounted but not on #{resource[:mountpoint]}"
       end
     else
       puts 'creating fs'
@@ -87,7 +89,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
 
   def mount_volume
     devpoint = "/dev/disk/by-uuid/#{volume_id}"
-    mount(devpoint,resouce[:mountpoint])
+    mount(devpoint,resource[:mountpoint])
   end
 
   def is_mounted
