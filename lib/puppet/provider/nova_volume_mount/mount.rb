@@ -143,10 +143,10 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
   end
 
   def find_uuid
-    uuid = lsblk('-l','-n','-o','-UUID')
+    uuid = lsblk('-l','-n','-o','UUID')
     uuid = uuid.split("\n")
     uuid.each do |u|
-
+      puts u
     end
   end
 

@@ -103,7 +103,7 @@ Puppet::Type.type(:nova_volume_attach).provide(:nova) do
         found.push(v['display_name']) if v['display_name'].include? resource[:name]
       end
 
-      fail "more volumes found with name #{resource[:name]}" if found.length > 1
+      fail "more volumes found with name #{resource[:name]} exists" if found.length > 1
 
       if found.empty?
         puts 'volume not found'
