@@ -32,6 +32,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     # else
     #   false
     # end
+    puts mount_volume
     if find_uuid
       case is_mounted
       when 'mounted'
@@ -45,6 +46,13 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
   end
 
   def create
+    if find_uuid
+      puts is_mounted
+
+    else
+      puts 'creating fs'
+      mkfsext4(volume_dev,'-U',volume_id)
+    end
     # first check if fs is there
     # vi = get_volume_info
     # blk = blockdevice_name(volume_id)
@@ -65,7 +73,6 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     #     fail 'Cannot mount block has no %s filesystem' % resource[:filesystem]
     #   end
     # end
-    puts is_mounted
     puts'Create to be implemented'
   end
 
@@ -76,7 +83,10 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     puts 'Destroy (unmount) of volume to be implemented'
   end
 
-
+  def mount_volume
+    devpoint = "/dev/disk/by-uuid/#{volume_id}"
+    puts devpoint
+  end
 
   def is_mounted
     list = lsblk('-l', '-n', '-o', 'UUID,MOUNTPOINT')
