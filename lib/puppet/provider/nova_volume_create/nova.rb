@@ -61,8 +61,6 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
       return false
     else
       found = Array.new
-      puts 'empty test succesfull' if found.empty?
-
       res['volumes'].each do |v|
         found.push(v['display_name']) if v['display_name'].include? resource[:name]
       end
