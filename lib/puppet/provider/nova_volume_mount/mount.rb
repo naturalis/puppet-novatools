@@ -54,8 +54,12 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
       end
     else
       puts 'creating fs'
-      mkfsext4(volume_dev,'-U',volume_id)
-      mount_volume
+      if has_filesystem
+        fail 'not formatting file system because it already has one. Fix manually. Can be fixed by setting UUID to Openstack Volume ID'
+      else
+        mkfsext4(volume_dev,'-U',volume_id)
+        mount_volume
+      end
     end
     # first check if fs is there
     # vi = get_volume_info
@@ -64,7 +68,7 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     # unless has_filesystem(blk, resource[:filesystem])
     #   if resource[:filesystem] == 'ext4'
     #     mkfsext4(blk)
-    #   else
+    #   elseu
     #     fail 'Cannot create filesystem %s' % resource[:filesystem]
     #   end
     # end
@@ -77,7 +81,6 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     #     fail 'Cannot mount block has no %s filesystem' % resource[:filesystem]
     #   end
     # end
-    puts'Create to be implemented'
   end
 
   def destroy
@@ -111,9 +114,22 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     end
   end
 
-  def has_filesystem(blk, fs)
-    l =  lsblk('-f', blk)
-    return l.include? fs
+  def has_filesystem
+    list = lsblk('-l', '-n', '-o', 'NAME,FSTYPE')
+    blkname = volume_dev
+    blkname = blkname.split('/')[-1]
+    list = list.split("\n")
+    list.each do |l|
+      if l.include? blkname
+        l = l.split(' ')
+        if l.length > 1
+          puts 'block had an file system'
+          return true
+        else
+          return false
+        end
+      end
+    end
   end
 
   def list_blocks
