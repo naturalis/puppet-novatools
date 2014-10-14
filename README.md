@@ -22,7 +22,7 @@ An example deployment
 - add as a file system to the blockdevice
 - mount the blockdevice on "/data"
 
-
+####  code
 
     nova_volume_create { $volume_name :
       ensure        => present,
