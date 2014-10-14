@@ -33,7 +33,6 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     #   false
     # end
     find_uuid
-    puts volume_dev
   end
 
   def create
@@ -149,6 +148,13 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     found = Array.new
     uuid.each do |u|
       found.push(uuid) if uuid.include? volume_id
+    end
+    if found.empty?
+      puts 'uuid not found'
+      return false
+    else
+      puts 'uuid found'
+      return true
     end
   end
 
