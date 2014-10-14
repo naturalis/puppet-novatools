@@ -73,8 +73,10 @@ Puppet::Type.type(:nova_volume_mount).provide(:mount) do
     list = lsblk('-l', '-n', '-o', 'UUID,MOUNTPOINT')
     list = list.split("\n")
     list.each do |l|
-      a = l.split(' ')
-      puts a.length
+      if l.include? volume_id
+        a = l.split(' ')
+        puts a.length
+      end
     end
   end
 
