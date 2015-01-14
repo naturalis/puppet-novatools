@@ -1,3 +1,4 @@
+require File.join(File.dirname(__FILE__).split('/')[0..-2],'lib','novaapi.rb')
 Puppet::Type.type(:nova_volume_create).provide(:nova) do
 
   desc 'Manage Openstack with nova tools'
@@ -6,7 +7,21 @@ Puppet::Type.type(:nova_volume_create).provide(:nova) do
   require 'uri'
   require 'json'
   require 'time'
+  require 'yaml'
 
+  nova = OpenStackAPI.new('10.41.1.1','5000','/v2.0/tokens','admin','admin','sensu')
+  #nova.volume_list
+  #nova.volume_create('test-volume')
+  #puts nova.volume_attach("f036ebb2-0a0d-4153-9d85-8873d0d5dc16","2a26d3ae-db33-4228-83e3-19c62f0806fa")
+  puts nova.volume_show('f036ebb2-0a0d-4153-9d85-8873d0d5dc16')['volume']['status']
+  #nova.volume_attach('f036ebb2-0a0d-4153-9d85-8873d0d5dc16','2a26d3ae-db33-4228-83e3-19c62f0806fa')
+  #puts nova.floating_ip_list.to_yaml
+  #puts nova.floating_ip_create('net04_ext')
+  #nova.find_endpoint('object')
+  #puts nova.list.to_yaml
+
+  puts 'end'
+  exit
   commands nova: 'nova'
 
   @token = false

@@ -9,4 +9,12 @@
 # Learn more about module testing here:
 # http://docs.puppetlabs.com/guides/tests_smoke.html
 #
-include novatools
+
+nova_volume_create { 'test' :
+  ensure         => present,
+  password       => 'test',
+  username       => 'test',
+  tenant         => 'test',
+  controller_ip  => 'localhost',
+  volume_size    => 10,
+}
