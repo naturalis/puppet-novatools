@@ -22,6 +22,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
 
   def check_exists
     @property_hash[:volume_list] = @property_hash[:nova].volume_list.find { |v| v['display_name'] == resource[:name] }
+    puts @property_hash[:volume_list] if @property_hash[:volume_list].nil? ? false : true
     @property_hash[:volume_list].nil? ? false : true
   end
 
