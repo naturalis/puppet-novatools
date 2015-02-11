@@ -22,15 +22,16 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
 
   def check_exists
     @property_hash[:volume_list] = @property_hash[:nova].volume_list.find { |v| v['display_name'] == resource[:name] }
-    puts @property_hash[:volume_list] if @property_hash[:volume_list].nil? ? false : true
+    puts @property_hash[:volume_list]['id'] if @property_hash[:volume_list].nil? ? false : true
     @property_hash[:volume_list].nil? ? false : true
   end
 
   def attach_volume
-      true
+    @property_hash[:volume_list]['status']['attached'].nil? ? false : true
   end
 
   def attach_volume=(value)
+    puts 'puts attaching volume'
   end
 
   def create_filesystem
