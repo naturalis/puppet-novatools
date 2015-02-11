@@ -11,6 +11,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
 
   def create
     puts 'creating volume'
+    @property_hash[:nova].volume_create(resource[:name],resource[:volume_size_gb])
   end
 
   def destroy
