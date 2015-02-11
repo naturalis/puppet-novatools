@@ -32,7 +32,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
 
   def attach_volume=(value)
     puts 'puts attaching volume'
-    puts Facter['hostname'].value
+    puts Facter['uuid'].value.downcase
     #@property_hash[:list].list.find
     #@property_hash[:nova].volume_attach(@property_hash[:volume_list]['id'])
   end
