@@ -36,49 +36,49 @@
 # Copyright 2014 Your name here, unless otherwise noted.
 #
 class novatools (
-  $controller_ip,
-  $openstack_username,
-  $openstack_tentant,
-  $password,
-  $volume_name,
-  $volume_size,
-  $mount_point = '/data',
+  # $controller_ip,
+  # $openstack_username,
+  # $openstack_tentant,
+  # $password,
+  # $volume_name,
+  # $volume_size,
+  # $mount_point = '/data',
   ){
-
-  package { 'python-novaclient':
-    ensure => present,
-  }
-
-  nova_volume_create { $volume_name :
-    ensure         => present,
-    password       => $password,
-    username       => $openstack_username,
-    tenant         => $openstack_tentant,
-    controller_ip  => $controller_ip,
-    volume_size    => $volume_size,
-    require        => Package['python-novaclient'],
-  }
-
-  nova_volume_attach { $volume_name :
-    ensure         => present,
-    password       => $password,
-    username       => $openstack_username,
-    tenant         => $openstack_tentant,
-    controller_ip  => $controller_ip,
-    instance       => $::fqdn,
-    require        => Nova_volume_create[$volume_name],
-  }
-
-  nova_volume_mount { $volume_name :
-    ensure         => present,
-    password       => $password,
-    username       => $openstack_username,
-    tenant         => $openstack_tentant,
-    controller_ip  => $controller_ip,
-    instance       => $::fqdn,
-    mountpoint     => $mount_point,
-    filesystem     => 'ext4',
-    mount_options  => 'user_xattr,acl',
-    require        => Nova_volume_attach[$volume_name],
-  }
+  #
+  # package { 'python-novaclient':
+  #   ensure => present,
+  # }
+  #
+  # nova_volume_create { $volume_name :
+  #   ensure         => present,
+  #   password       => $password,
+  #   username       => $openstack_username,
+  #   tenant         => $openstack_tentant,
+  #   controller_ip  => $controller_ip,
+  #   volume_size    => $volume_size,
+  #   require        => Package['python-novaclient'],
+  # }
+  #
+  # nova_volume_attach { $volume_name :
+  #   ensure         => present,
+  #   password       => $password,
+  #   username       => $openstack_username,
+  #   tenant         => $openstack_tentant,
+  #   controller_ip  => $controller_ip,
+  #   instance       => $::fqdn,
+  #   require        => Nova_volume_create[$volume_name],
+  # }
+  #
+  # nova_volume_mount { $volume_name :
+  #   ensure         => present,
+  #   password       => $password,
+  #   username       => $openstack_username,
+  #   tenant         => $openstack_tentant,
+  #   controller_ip  => $controller_ip,
+  #   instance       => $::fqdn,
+  #   mountpoint     => $mount_point,
+  #   filesystem     => 'ext4',
+  #   mount_options  => 'user_xattr,acl',
+  #   require        => Nova_volume_attach[$volume_name],
+  # }
 }
