@@ -32,9 +32,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
 
   def attach_volume=(value)
     puts 'puts attaching volume'
-    puts Facter['uuid'].value.downcase
-    #@property_hash[:list].list.find
-    #@property_hash[:nova].volume_attach(@property_hash[:volume_list]['id'])
+    @property_hash[:nova].volume_attach(@property_hash[:volume_list]['id'],Facter['uuid'].value.downcase)
   end
 
   def create_filesystem
