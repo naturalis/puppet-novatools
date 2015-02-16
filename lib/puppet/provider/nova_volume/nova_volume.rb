@@ -31,6 +31,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def attach_volume=(value)
+    puts value
     puts 'puts attaching volume'
     status = volume_status
     case status
