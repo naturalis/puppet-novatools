@@ -43,7 +43,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
     when 'available'
       puts 'volume is avaiable going to attatch'
       @property_hash[:nova].volume_attach(@property_hash[:volume_list]['id'],Facter['uuid'].value.downcase)
-      #wait_for_attach(300)
+      wait_for_attach(300)
     else
       fail "unknown status: #{status}"
     end
