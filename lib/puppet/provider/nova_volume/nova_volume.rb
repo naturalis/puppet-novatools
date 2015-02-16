@@ -41,6 +41,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
     when 'deleting','error','error_deleting'
       print "cannot attach, current state is #{status}"
     when 'available'
+      puts 'volume is avaiable going to attatch'
       @property_hash[:nova].volume_attach(@property_hash[:volume_list]['id'],Facter['uuid'].value.downcase)
       #wait_for_attach(300)
     else
