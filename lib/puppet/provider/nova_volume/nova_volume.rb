@@ -31,7 +31,6 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def attach_volume=(value)
-    puts value
     puts 'puts attaching volume'
     status = volume_status
     case status
@@ -43,7 +42,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
       print "cannot attach, current state is #{status}"
     when 'available'
       @property_hash[:nova].volume_attach(@property_hash[:volume_list]['id'],Facter['uuid'].value.downcase)
-      wait_for_attach(300)
+      #wait_for_attach(300)
     else
       fail "unknown status: #{status}"
     end
