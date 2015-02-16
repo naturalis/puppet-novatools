@@ -27,7 +27,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def attach_volume
-    @property_hash[:volume_list]['status']['in-use'].nil? ? false : true
+    @property_hash[:volume_list]['status']['in-use'].nil? ? 'false' : 'true'
   end
 
   def attach_volume=(value)
