@@ -73,13 +73,19 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def wait_for_attach(timeout=300)
-    status = volume_status.downcase
-    totaltime = 0
-    while status.include? 'attaching' and totaltime < timeout
-      totaltime += 1
-      puts "waiting for volume to be attached. Timeout is #{timeout}. Current time is #{totaltime}"
-      status = volume_status.downcase
+    #status = volume_status.downcase
+    #totaltime = 0
+
+    # while status.include? 'attaching' and totaltime < timeout
+    #   totaltime += 2
+    #   puts "waiting for volume to be attached. Timeout is #{timeout}. Current time is #{totaltime}"
+    #   status = volume_status.downcase
+    #   sleep 2
+    # end
+   (0..timeout).each do |i|
+      break if volume_status_downcase.include? 'in-use'
       sleep 1
+      puts "Waiting for volume #{resource[:name]} to attach. Timeout is #{timeout}. Current wait time is #{i}"
     end
   end
 
