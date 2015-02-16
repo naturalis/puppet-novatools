@@ -48,12 +48,18 @@ Puppet::Type.newtype(:nova_volume) do
     desc 'Mount the volume (or not)'
     defaultto true
     newvalues(true,false)
+    munge do |v|
+      v.to_s
+    end
   end
 
   newproperty(:create_filesystem) do
     desc 'Create a filesystem'
     defaultto 'ext4'
     newvalues(false,'ext4')
+    munge do |v|
+      v.to_s
+    end
   end
 
   newparam(:mount_options) do

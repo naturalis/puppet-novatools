@@ -58,7 +58,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def mount_volume
-    true
+    return 'true'
   end
 
   def mount_volume=(value)
