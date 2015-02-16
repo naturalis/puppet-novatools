@@ -85,9 +85,9 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
     # end
     puts 'starting wait for attaching'
     #puts volume_status.downcase
-    (0..timeout).each do |i|
+    (1..(timeout/5)).each do |i|
        puts "Waiting for volume #{resource[:name]} to attach. Timeout is #{timeout}. Current wait time is #{i}"
-       sleep 1
+       sleep 5
        s =  @property_hash[:nova].volume_list.find { |v| v['display_name'] == resource[:name] }
        break if s['status'].downcase.include? 'in-use'
     end
