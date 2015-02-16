@@ -37,12 +37,11 @@ Puppet::Type.newtype(:nova_volume) do
 
   newproperty(:attach_volume) do
     desc 'Attach the volume (or not)'
-    munge do |v|
-      v.to_s
-      v = v['true'].nil? ? false : true
-    end
+    #munge do |v|
+    #  v = v['true'].nil? ? false : true
+    #end
     defaultto true
-    newvalues('true','false')
+    newvalues(true,false)
   end
 
   newproperty(:mount_volume) do
