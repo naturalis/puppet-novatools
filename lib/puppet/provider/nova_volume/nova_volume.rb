@@ -80,6 +80,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
       totaltime += 1
       puts "waiting for volume to be attached. Timeout is #{timeout}. Current time is #{totaltime}"
       status = volume_status.downcase
+      sleep 1
     end
   end
 
