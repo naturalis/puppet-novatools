@@ -2,6 +2,10 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   require File.join(File.dirname(__FILE__).split('/')[0..-2],'lib','novaapi.rb')
   require 'uri'
 
+  commands mount: 'mount'
+  commands umount: 'umount'
+  commands mkfsext4: 'mkfs.ext4'
+  commands lsblk: 'lsblk'
 
   def exists?
     ep = URI(resource[:keystone_endpoint])
@@ -15,9 +19,6 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def destroy
-  end
-
-  def check_all
   end
 
   def check_exists
@@ -35,22 +36,22 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
     status = volume_status
     case status
     when 'in-use'
-      print 'dont do anything'
+      fail 'status is "in-use" . Function should not end up here'
     when 'attaching'
-      print 'volume is attaching'
+      fail "Volume #{resource[:name]} is currently attaching"
     when 'deleting','error','error_deleting'
       print "cannot attach, current state is #{status}"
     when 'available'
-      puts 'volume is avaiable going to attatch'
+      #puts 'volume is avaiable going to attatch'
       @property_hash[:nova].volume_attach(@property_hash[:volume_list]['id'],Facter['uuid'].value.downcase)
       wait_for_attach(300)
     else
       fail "unknown status: #{status}"
     end
-    #@property_hash[:nova].volume_attach(@property_hash[:volume_list]['id'],Facter['uuid'].value.downcase)
   end
 
   def create_filesystem
+    puts list_devices
     return 'ext4'
   end
 
@@ -73,26 +74,32 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
     @property_hash[:volume_list]['status'].downcase
   end
 
-  def wait_for_attach(timeout=300)
-    #status = volume_status.downcase
-    #totaltime = 0
-
-    # while status.include? 'attaching' and totaltime < timeout
-    #   totaltime += 2
-    #   puts "waiting for volume to be attached. Timeout is #{timeout}. Current time is #{totaltime}"
-    #   status = volume_status.downcase
-    #   sleep 2
-    # end
-    puts 'starting wait for attaching'
-    #puts volume_status.downcase
-    5.step(timeout,5).each do |i|
+  def wait_for_attach(timeout=300,sleep_time=5)
+    sleep_time.step(timeout,sleep_time).each do |i|
        puts "Waiting for volume #{resource[:name]} to attach. Timeout is #{timeout}. Current wait time is #{i}"
-       sleep 5
+       sleep sleep_time
        s =  @property_hash[:nova].volume_list.find { |v| v['display_name'] == resource[:name] }
        break if s['status'].downcase.include? 'in-use'
     end
   end
 
+  def list_devices(filter='vda')
+    list = lsblk('-P','-n','-o','NAME,FSTYPE,MOUNTPOINT,UUID').split("\n")
+    until list.index{|s| s.include(filter)}.nil?
+      list.delete_at(list.index{|s| s.include(filter)})
+    end
+    devices = Array.new
+    list.each do |l|
+      hash = {
+        :dev   => l.split[0].split("=")[1].split("\"")[1],
+        :fs    => l.split[1].split("=")[1].split("\"")[1],
+        :mount => l.split[2].split("=")[1].split("\"")[1],
+        :uuid  => l.split[3].split("=")[1].split("\"")[1]
+      }
+      devices << hash
+    end
+    devices
+  end
 
 
 
