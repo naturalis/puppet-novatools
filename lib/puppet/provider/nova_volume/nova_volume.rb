@@ -51,7 +51,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def create_filesystem
-    puts list_devices('')
+    puts list_devices('kjhjkjh')
     return 'ext4'
   end
 
