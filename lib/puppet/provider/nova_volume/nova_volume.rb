@@ -85,8 +85,8 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
 
   def list_devices(filter='vda')
     list = lsblk('-P','-n','-o','NAME,FSTYPE,MOUNTPOINT,UUID').split("\n")
-    until list.index{|s| s.include(filter)}.nil?
-      list.delete_at(list.index{|s| s.include(filter)})
+    until list.index{|s| s.include?(filter)}.nil?
+      list.delete_at(list.index{|s| s.include?(filter)})
     end
     devices = Array.new
     list.each do |l|
