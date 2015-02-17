@@ -14,6 +14,7 @@ class Rest
     req['x-auth-token'] = xauth unless xauth == false
     req['content-type'] = 'application/json'
     req['accept'] = 'application/json'
+    puts "URI: #{uri.host} #{uri.port} #{uri.path}"
     res = http.request(req)
     JSON.parse(res.body)
   end
@@ -25,6 +26,8 @@ class Rest
     req['x-auth-token'] = xauth unless xauth == false
     req['content-type'] = 'application/json'
     req['accept'] = 'application/json'
+    puts "URI: #{uri.host} #{uri.port} #{uri.path}"
+    puts "DATA: #{data}"
     res = http.request(req)
     JSON.parse(res.body)
   end
@@ -36,6 +39,8 @@ class Rest
     req['x-auth-token'] = xauth unless xauth == false
     req['content-type'] = 'application/json'
     req['accept'] = 'application/json'
+    puts "URI: #{uri.host} #{uri.port} #{uri.path}"
+    puts "DATA: #{data}"
     res = http.request(req)
     JSON.parse(res.body)
   end
@@ -46,6 +51,7 @@ class Rest
     req['x-auth-token'] = xauth unless xauth == false
     req['content-type'] = 'application/json'
     req['accept'] = 'application/json'
+    puts "URI: #{uri.host} #{uri.port} #{uri.path}"
     res = http.request(req)
     JSON.parse(res.body)
   end
