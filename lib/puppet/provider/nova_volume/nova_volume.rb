@@ -51,11 +51,15 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def create_filesystem
-    puts list_devices('kjhjkjh')
-    return 'ext4'
+    result = nil
+    list_devices('vda').each do |dev|
+      result = dev[:fs] if dev[:uuid] == @property_hash[:volume_list]['id']
+    end
+    result
   end
 
   def create_filesystem=(value)
+    'need to create fs'
   end
 
   def mount_volume
