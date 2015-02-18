@@ -59,7 +59,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def create_filesystem=(value)
-    'need to create fs'
+    puts 'need to create fs'
   end
 
   def mount_volume
