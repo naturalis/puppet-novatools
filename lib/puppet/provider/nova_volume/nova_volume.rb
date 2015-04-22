@@ -74,7 +74,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
     #puts 'trying to create fs'
     case resource[:create_filesystem]
     when 'ext4'
-      mkfsext4("/dev/#{block_device[:dev]}")
+      mkfsext4("/dev/#{block_device[:dev]}",'-U',@property_hash[:volume_list]['id'])
       notice("#{resource[:create_filesystem]} created on /dev/#{block_device[:dev]}")
     else
       fail "unable to create #{resource[:create_filesystem]}"
