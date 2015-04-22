@@ -155,10 +155,10 @@ class OpenStackAPI < Rest
         puts '--- refreshing token'
         @token = post("http://#{@host}:#{@port}/v2.0/tokens",data)
       else
-        puts '--- token is ok'
+        #puts '--- token is ok'
       end
     else
-      puts '--- requesting new token'
+      notice(' Requesting new token')
       @token = post("http://#{@host}:#{@port}/v2.0/tokens",data)
     end
   end

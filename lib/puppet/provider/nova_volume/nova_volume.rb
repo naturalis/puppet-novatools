@@ -10,7 +10,6 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   def exists?
     ep = URI(resource[:keystone_endpoint])
     @property_hash[:nova] = OpenStackAPI.new(ep.host,ep.port,ep.path,resource[:username],resource[:password],resource[:tenant])
-    notice('hi')
     result = check_volume_exists
     result = is_volume_attached if resource[:attach_volume]
     #result = is_volume_formatted unless resource[:create_filesystem] == 'false'
@@ -18,10 +17,12 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def create
-    puts 'creating volume'
     if !check_volume_exists
+      notice("Creating volume #{resource[:name]}")
       @property_hash[:nova].volume_create(resource[:name],resource[:volume_size_gb])
-    elsif !is_volume_attached
+    end
+    if !is_volume_attached and resource[:attach_volume]
+      notice("Attaching volume #{resource[:name]}")
       attach_volume
     end
   end
@@ -49,7 +50,6 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def attach_volume
-    puts 'attaching volume'
     status = volume_status
     case status
     when 'in-use'
@@ -57,7 +57,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
     when 'attaching'
       fail "Volume #{resource[:name]} is currently attaching"
     when 'deleting','error','error_deleting'
-      print "cannot attach, current state is #{status}"
+      fail "cannot attach, current state is #{status}"
     when 'available'
       #puts 'volume is avaiable going to attatch'
       @property_hash[:nova].volume_attach(@property_hash[:volume_list]['id'],Facter['uuid'].value.downcase)
@@ -89,7 +89,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
 
   def wait_for_attach(timeout=300,sleep_time=5)
     sleep_time.step(timeout,sleep_time).each do |i|
-       puts "Waiting for volume #{resource[:name]} to attach. Timeout is #{timeout}. Current wait time is #{i}"
+       notice("Waiting for volume #{resource[:name]} to attach. Timeout is #{timeout}. Current wait time is #{i}")
        sleep sleep_time
        s =  @property_hash[:nova].volume_list.find { |v| v['display_name'] == resource[:name] }
        break if s['status'].downcase.include? 'in-use'
@@ -114,7 +114,6 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
         :serial => serial
       }
       devices << hash
-      puts hash
     end
     devices
   end
