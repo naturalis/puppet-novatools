@@ -86,7 +86,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
 
   def mount_volume
     mkdir('-p',resource[:mount_point])
-    mount("/dev/#{block_device[:dev]}",resource[:mount_point],resource[:mount_options])
+    mount("/dev/#{block_device[:dev]}",resource[:mount_point],'-o',resource[:mount_options])
     notice("Volume /dev/#{block_device[:dev]} mounted at #{resource[:mount_point]}")
   end
 
