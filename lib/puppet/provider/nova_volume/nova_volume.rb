@@ -74,9 +74,9 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
     case resource[:create_filesystem]
     when 'ext4'
       mkfsext4("/dev/#{block_device[:dev]}")
-      notice("#{resource[:create_filesytem]} created on /dev/#{block_device[:dev]}")
+      notice("#{resource[:create_filesystem]} created on /dev/#{block_device[:dev]}")
     else
-      fail "unable to create #{resource[:create_filesytem]}"
+      fail "unable to create #{resource[:create_filesystem]}"
     end
   end
 
