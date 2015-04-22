@@ -110,7 +110,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
     list_devices.each do |d|
       dev = d if d[:serial] == @property_hash[:volume_list]['id'][0..19]
     end
-    fail "Cannot find block device with serial: #{@property_hash[:volume_list]['id'][0..19]}"
+    fail "Cannot find block device with serial: #{@property_hash[:volume_list]['id'][0..19]}" if dev.empty?
     dev
   end
 
