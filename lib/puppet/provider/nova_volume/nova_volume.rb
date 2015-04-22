@@ -27,7 +27,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
       attach_volume
     end
     if !is_volume_formatted and resource[:create_filesystem] != 'false'
-      #notice("Volume /dev/#{block_device[:dev]} needs to be formatted")
+      notice("Volume /dev/#{block_device[:dev]} needs to be formatted")
       create_filesystem
     end
   end
