@@ -152,13 +152,13 @@ class OpenStackAPI < Rest
     data = {'auth' => { 'tenantName' => @t, 'passwordCredentials' => { 'username' => @u, 'password' => @p } } }
     if @token
       if Time.now > Time.parse(@token['access']['token']['expires']) - 60
-        puts '--- refreshing token'
+        #puts 'Refreshing token'
         @token = post("http://#{@host}:#{@port}/v2.0/tokens",data)
       else
         #puts '--- token is ok'
       end
     else
-      notice(' Requesting new token')
+      #puts 'Requesting new token'
       @token = post("http://#{@host}:#{@port}/v2.0/tokens",data)
     end
   end
