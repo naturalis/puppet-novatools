@@ -45,6 +45,8 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
 
   def is_volume_formatted
     puts 'check for format'
+    puts block_device[:fs] == '' ? false : true
+    puts     block_device
     block_device[:fs] == '' ? false : true
   end
 
