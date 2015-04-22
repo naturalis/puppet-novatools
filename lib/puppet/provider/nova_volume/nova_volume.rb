@@ -26,7 +26,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
       notice("Attaching volume #{resource[:name]}")
       attach_volume
     end
-    if !is_volume_formatted #and not resource[:create_filesystem] == 'false'
+    if !is_volume_formatted and resource[:create_filesystem] != 'false'
       notice("Volume /dev/#{block_device[:dev]} needs to be formatted")
       create_filesystem
     end
@@ -46,9 +46,9 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def is_volume_formatted
-    puts 'check for format'
-    puts block_device[:fs] == '' ? false : true
-    puts     block_device
+    #puts 'check for format'
+    #puts block_device[:fs] == '' ? false : true
+    #puts     block_device
     block_device[:fs].nil? ? false : true
   end
 
@@ -71,7 +71,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def create_filesystem
-    puts 'trying to create fs'
+    #puts 'trying to create fs'
     case resource[:create_filesystem]
     when 'ext4'
       mkfsext4("/dev/#{block_device[:dev]}")
