@@ -6,6 +6,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   commands umount: 'umount'
   commands mkfsext4: 'mkfs.ext4'
   commands lsblk: 'lsblk'
+  commands mkdir: 'mkdir'
 
   def exists?
     ep = URI(resource[:keystone_endpoint])
@@ -13,6 +14,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
     result = check_volume_exists
     result = is_volume_attached if resource[:attach_volume]
     result = is_volume_formatted unless resource[:create_filesystem] == 'false'
+    result = is_mounted if resource[:mount_volume]
     result
   end
 
@@ -30,6 +32,10 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
       notice("Volume /dev/#{block_device[:dev]} needs to be formatted")
       create_filesystem
     end
+    if !is_mounted and resource[:mount_volume]
+      notice("Volume /dev/#{block_device[:dev]} needs to be mounted at #{resource[:mount_point]}")
+      mount_volume
+    end
   end
 
   def destroy
@@ -46,9 +52,6 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def is_volume_formatted
-    #puts 'check for format'
-    #puts block_device[:fs] == '' ? false : true
-    #puts     block_device
     block_device[:fs].nil? ? false : true
   end
 
@@ -82,10 +85,13 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def mount_volume
-    return 'true'
+    mkdir('-p',resource[:mount_point])
+    mount("/dev/#{block_device[:dev]}",resource[:mount_point],'-o',resource[:mount_options])
+    notice("Volume /dev/#{block_device[:dev]} mounted at #{resource[:mount_point]}")
   end
 
-  def check_mount
+  def is_mounted
+    block_device[:mount].nil? ? false : true
   end
 
   def volume_status
