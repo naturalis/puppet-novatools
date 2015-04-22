@@ -34,6 +34,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def is_volume_attached
+    puts @property_hash[:volume_list]
     @property_hash[:volume_list]['status']['in-use'].nil? ? 'false' : 'true'
   end
 
