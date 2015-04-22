@@ -10,7 +10,11 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   def exists?
     ep = URI(resource[:keystone_endpoint])
     @property_hash[:nova] = OpenStackAPI.new(ep.host,ep.port,ep.path,resource[:username],resource[:password],resource[:tenant])
-    check_exists
+
+    result = check_volume_exists
+    result = is_volume_attached if resource[:attach_volume]
+    result = is_volume_formatted unless resource[:create_filesystem] == 'false'
+    result
   end
 
   def create
@@ -21,17 +25,24 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   def destroy
   end
 
-  def check_exists
+  def check_volume_exists
     @property_hash[:volume_list] = @property_hash[:nova].volume_list.find { |v| v['display_name'] == resource[:name] }
-    #puts @property_hash[:volume_list] if @property_hash[:volume_list].nil? ? false : true
     @property_hash[:volume_list].nil? ? false : true
   end
 
-  def attach_volume
+  def is_volume_attached
     @property_hash[:volume_list]['status']['in-use'].nil? ? 'false' : 'true'
   end
 
-  def attach_volume=(value)
+  def is_volume_formatted
+    result = false
+    list_devices.each do |d|
+      result = true if d[:uuid] == @property_hash[:volume_list]['id']
+    end
+    result
+  end
+
+  def attach_volume
     puts 'puts attaching volume'
     status = volume_status
     case status
@@ -52,23 +63,15 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
 
   def create_filesystem
     result = nil
-    list_devices('vda').each do |dev|
+    list_devices.each do |dev|
       result = dev[:fs] if dev[:uuid] == @property_hash[:volume_list]['id']
     end
     result
   end
 
-  def create_filesystem=(value)
-    puts 'need to create fs'
-  end
-
   def mount_volume
     return 'true'
   end
-
-  def mount_volume=(value)
-  end
-
 
   def check_mount
   end
@@ -87,20 +90,25 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
     end
   end
 
-  def list_devices(filter='vda')
+  def list_devices
     list = lsblk('-P','-n','-o','NAME,FSTYPE,MOUNTPOINT,UUID').split("\n")
-    until list.index{|s| s.include?(filter)}.nil?
-      list.delete_at(list.index{|s| s.include?(filter)})
-    end
+    #until list.index{|s| s.include?(filter)}.nil?
+    #  list.delete_at(list.index{|s| s.include?(filter)})
+    #end
     devices = Array.new
     list.each do |l|
+      dev = l.split[0].split("=")[1].split("\"")[1]
+      serial = ''
+      serial = File.read("/sys/class/block/#{dev}/serial") if File.exists?("/sys/class/block/#{dev}/serial")
       hash = {
-        :dev   => l.split[0].split("=")[1].split("\"")[1],
-        :fs    => l.split[1].split("=")[1].split("\"")[1],
-        :mount => l.split[2].split("=")[1].split("\"")[1],
-        :uuid  => l.split[3].split("=")[1].split("\"")[1]
+        :dev    => dev,
+        :fs     => l.split[1].split("=")[1].split("\"")[1],
+        :mount  => l.split[2].split("=")[1].split("\"")[1],
+        :uuid   => l.split[3].split("=")[1].split("\"")[1],
+        :serial => serial
       }
       devices << hash
+      puts hash
     end
     devices
   end

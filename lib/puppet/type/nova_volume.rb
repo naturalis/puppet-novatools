@@ -35,7 +35,7 @@ Puppet::Type.newtype(:nova_volume) do
     defaultto 1
   end
 
-  newproperty(:attach_volume) do
+  newparam(:attach_volume) do
     desc 'Attach the volume (or not)'
     defaultto true
     newvalues(true,false)
@@ -44,7 +44,7 @@ Puppet::Type.newtype(:nova_volume) do
     end
   end
 
-  newproperty(:mount_volume) do
+  newparam(:mount_volume) do
     desc 'Mount the volume (or not)'
     defaultto true
     newvalues(true,false)
@@ -53,7 +53,7 @@ Puppet::Type.newtype(:nova_volume) do
     end
   end
 
-  newproperty(:create_filesystem) do
+  newparam(:create_filesystem) do
     desc 'Create a filesystem'
     defaultto 'ext4'
     newvalues(false,'ext4')
