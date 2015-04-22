@@ -20,6 +20,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
     if !check_volume_exists
       notice("Creating volume #{resource[:name]}")
       @property_hash[:nova].volume_create(resource[:name],resource[:volume_size_gb])
+      wait_for_create
     end
     if !is_volume_attached and resource[:attach_volume]
       notice("Attaching volume #{resource[:name]}")
@@ -91,12 +92,21 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
     end
   end
 
-  def wait_for_attach(timeout=300,sleep_time=5)
+  def wait_for_attach(timeout=300,sleep_time=2)
     sleep_time.step(timeout,sleep_time).each do |i|
        notice("Waiting for volume #{resource[:name]} to attach. Timeout is #{timeout}. Current wait time is #{i}")
        sleep sleep_time
        s =  @property_hash[:nova].volume_list.find { |v| v['display_name'] == resource[:name] }
        break if s['status'].downcase.include? 'in-use'
+    end
+  end
+
+  def wait_for_create(timeout=300,sleep_time=2)
+    sleep_time.step(timeout,sleep_time).each do |i|
+       notice("Waiting for volume #{resource[:name]} to be created. Timeout is #{timeout}. Current wait time is #{i}")
+       sleep sleep_time
+       s =  @property_hash[:nova].volume_list.find { |v| v['display_name'] == resource[:name] }
+       break if s['status'].downcase.include? 'available'
     end
   end
 
