@@ -12,7 +12,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
     @property_hash[:nova] = OpenStackAPI.new(ep.host,ep.port,ep.path,resource[:username],resource[:password],resource[:tenant])
     result = check_volume_exists
     result = is_volume_attached if resource[:attach_volume]
-    #result = is_volume_formatted unless resource[:create_filesystem] == 'false'
+    result = is_volume_formatted unless resource[:create_filesystem] == 'false'
     result
   end
 
@@ -26,6 +26,9 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
       notice("Attaching volume #{resource[:name]}")
       attach_volume
     end
+    if !is_volume_formatted and resource[:create_filesystem] != 'false'
+      notice("Volume /dev/#{block_device[:dev]} needs to be formatted")
+    end
   end
 
   def destroy
@@ -37,17 +40,11 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def is_volume_attached
-    #puts @property_hash[:volume_list]['status']
-    #@property_hash[:volume_list]['status']['in-use'].nil? ? 'false' : 'true'
     volume_status == 'in-use' ? true : false
   end
 
   def is_volume_formatted
-    result = false
-    list_devices.each do |d|
-      result = true if d[:uuid] == @property_hash[:volume_list]['id']
-    end
-    result
+    block_device[:fs] == '' ? false : true
   end
 
   def attach_volume
@@ -69,11 +66,9 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def create_filesystem
-    result = nil
-    list_devices.each do |dev|
-      result = dev[:fs] if dev[:uuid] == @property_hash[:volume_list]['id']
-    end
-    result
+    # result = false
+    # result = true if block+
+    # result
   end
 
   def mount_volume
@@ -110,11 +105,17 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
     end
   end
 
+  def block_device
+    dev = Hash.new
+    list_devices.each do |d|
+      dev = d if d[:serial] == @property_hash[:volume_list]['id'][0..19]
+    end
+    fail "Cannot find block device with serial: #{@property_hash[:volume_list]['id'][0..19]}"
+    dev
+  end
+
   def list_devices
     list = lsblk('-P','-n','-o','NAME,FSTYPE,MOUNTPOINT,UUID').split("\n")
-    #until list.index{|s| s.include?(filter)}.nil?
-    #  list.delete_at(list.index{|s| s.include?(filter)})
-    #end
     devices = Array.new
     list.each do |l|
       dev = l.split[0].split("=")[1].split("\"")[1]
