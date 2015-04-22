@@ -20,7 +20,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
     puts 'creating volume'
     if !check_volume_exists
       @property_hash[:nova].volume_create(resource[:name],resource[:volume_size_gb])
-    elsif !is_voume_attached
+    elsif !is_volume_attached
       attach_volume
     end
   end
