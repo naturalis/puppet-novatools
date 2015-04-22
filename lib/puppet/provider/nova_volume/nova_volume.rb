@@ -56,7 +56,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
       fail 'status is "in-use" . Function should not end up here'
     when 'attaching'
       fail "Volume #{resource[:name]} is currently attaching"
-    when 'deleting','error','error_deleting'
+    when 'deleting','error','error_deleting','non-exsistent'
       fail "cannot attach, current state is #{status}"
     when 'available'
       #puts 'volume is avaiable going to attatch'
@@ -84,7 +84,11 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
 
   def volume_status
     @property_hash[:volume_list] = @property_hash[:nova].volume_list.find { |v| v['display_name'] == resource[:name] }
-    @property_hash[:volume_list]['status'].downcase
+    begin
+      @property_hash[:volume_list]['status'].downcase
+    rescue
+      'non-existent'
+    end
   end
 
   def wait_for_attach(timeout=300,sleep_time=5)
