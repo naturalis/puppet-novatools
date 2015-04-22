@@ -4,7 +4,7 @@ require 'json'
 require 'time'
 require 'pp'
 
-puts 'got nova api'
+#puts 'got nova api'
 
 class Rest
   def get(uri,xauth=false)
