@@ -27,11 +27,13 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
       attach_volume
     end
     if !is_volume_formatted and resource[:create_filesystem] != 'false'
-      notice("Volume /dev/#{block_device[:dev]} needs to be formatted")
+      #notice("Volume /dev/#{block_device[:dev]} needs to be formatted")
+      create_filesystem
     end
   end
 
   def destroy
+    notice("Deleting of volume is not implemented.")
   end
 
   def check_volume_exists
@@ -69,9 +71,13 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def create_filesystem
-    # result = false
-    # result = true if block+
-    # result
+    case resource[:create_filesystem]
+    when 'ext4'
+      mkfsext4("/dev/#{block_device}")
+      notice("#{resource[:create_filesytem]} created on /dev/#{block_device}")
+    else
+      fail "unable to create #{resource[:create_filesytem]}"
+    end
   end
 
   def mount_volume
