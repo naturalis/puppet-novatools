@@ -12,7 +12,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
     @property_hash[:nova] = OpenStackAPI.new(ep.host,ep.port,ep.path,resource[:username],resource[:password],resource[:tenant])
     result = check_volume_exists
     result = is_volume_attached if resource[:attach_volume]
-    result = is_volume_formatted unless resource[:create_filesystem] == 'false'
+    #result = is_volume_formatted unless resource[:create_filesystem] == 'false'
     result
   end
 
