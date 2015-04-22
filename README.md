@@ -12,7 +12,7 @@ At the moment novatools supports
 
 ### Supported OS
 
-Testen only on Ubuntu 14.04
+Tested only on Ubuntu 14.04
 
 ### Example
 
