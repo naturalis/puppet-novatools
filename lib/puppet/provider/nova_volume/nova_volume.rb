@@ -71,6 +71,7 @@ Puppet::Type.type(:nova_volume).provide(:nova_volume) do
   end
 
   def create_filesystem
+    puts 'trying to create fs'
     case resource[:create_filesystem]
     when 'ext4'
       mkfsext4("/dev/#{block_device[:dev]}")
